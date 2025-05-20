@@ -49,6 +49,11 @@ src
 ./mvnw test
 ```
 
+## lancer le pro
+
+```bash
+mvn clean install && mvn spring-boot:run
+
 ---
 
 

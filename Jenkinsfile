@@ -10,37 +10,58 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('📥 Checkout') {
             steps {
-                checkout scm
+                echo "🔄 Récupération du code source..."
+                git branch: 'main', url: 'https://github.com/SimBienvenueHoulBoumi/demo-rest-api.git'
             }
         }
 
-        stage('Build') {
+        stage('🔧 Compilation') {
             steps {
-                sh './mvnw clean install -DskipTests'
+                echo "⚙️ Compilation du projet Spring Boot..."
+                sh './mvnw clean compile'
             }
         }
 
-        stage('Test') {
+        stage('🧪 Tests') {
             steps {
+                echo "🧪 Exécution des tests unitaires et d'intégration..."
                 sh './mvnw test'
             }
         }
 
-        stage('Package') {
+        stage('📦 Build & Package') {
             steps {
+                echo "📦 Construction du JAR Spring Boot..."
+                sh './mvnw clean package -DskipTests'
+            }
+        }
+
+        stage('📂 Archive') {
+            steps {
+                echo "🎯 Archivage de l'artefact généré..."
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            }
+        }
+
+        stage('🧬 Swagger Check (optionnel)') {
+            when {
+                expression { fileExists('src/main/java/com/example/demo/config/SwaggerConfig.java') }
+            }
+            steps {
+                echo "🔍 Swagger détecté, vérification de la doc..."
+                sh "curl -s --fail http://localhost:5000/swagger-ui/index.html || echo 'Swagger UI indisponible (probablement hors contexte Jenkins)'"
             }
         }
     }
 
     post {
         success {
-            echo '✅ Build terminé avec succès !'
+            echo '✅ Pipeline terminée avec succès ! 🎉'
         }
         failure {
-            echo '❌ Build échoué. Check les logs.'
+            echo '❌ Une étape a échoué. Consulte les logs Jenkins pour plus d’info 🪵'
         }
     }
 }

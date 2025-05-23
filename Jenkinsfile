@@ -1,5 +1,6 @@
 pipeline {
-    agent any
+    agent { label 'agent-distant' }
+
 
     environment {
         MAVEN_OPTS = "-Dmaven.repo.local=.m2/repository"

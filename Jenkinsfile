@@ -18,13 +18,13 @@ pipeline {
                 echo "🔄 Clonage du repo GitHub (branche main)..."
                 git branch: 'main',
                     credentialsId: 'github-token',
-                    url: 'https://github.com/SimBienvenueHoulBoumi/demo-rest-api.git'
+                    url: 'https://github.com/SimBienvenueHoulBoumi/demo-rest-api-rest-api.git'
             }
         }
 
         stage('🔧 Compilation') {
             steps {
-                dir('demo') {
+                dir('demo-rest-api') {
                     echo "⚙️ Compilation du projet Spring Boot..."
                     sh './mvnw clean compile'
                 }    
@@ -33,7 +33,7 @@ pipeline {
 
         stage('🧪 Tests') {
             steps {
-                dir('demo') {
+                dir('demo-rest-api') {
                     echo "🧪 Exécution des tests..."
                     sh './mvnw test'
                 }
@@ -42,7 +42,7 @@ pipeline {
 
         stage('📦 Build') {
             steps {
-                dir('demo') {
+                dir('demo-rest-api') {
                     echo "📦 Création de l’artefact JAR..."
                     sh './mvnw clean package'
                 }
@@ -51,7 +51,7 @@ pipeline {
 
         stage('📂 Archive') {
             steps {
-                dir('demo') {
+                dir('demo-rest-api') {
                     echo "📂 Archivage de l’artefact JAR..."
                     archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 }
@@ -62,7 +62,7 @@ pipeline {
         
         stage('🧬 Swagger (optionnel)') {
             when {
-                expression { fileExists('src/main/java/com/example/demo/config/SwaggerConfig.java') }
+                expression { fileExists('src/main/java/com/example/demo-rest-api/config/SwaggerConfig.java') }
             }
             steps {
                 echo "🔍 Swagger détecté, test de l’interface..."

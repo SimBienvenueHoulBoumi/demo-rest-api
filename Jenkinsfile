@@ -24,32 +24,42 @@ pipeline {
 
         stage('🔧 Compilation') {
             steps {
-                echo "⚙️ Compilation du projet Spring Boot..."
-                sh './mvnw clean compile'
+                dir('demo') {
+                    echo "⚙️ Compilation du projet Spring Boot..."
+                    sh './mvnw clean compile'
+                }    
             }
         }
 
         stage('🧪 Tests') {
             steps {
-                echo "🧪 Tests unitaires et d’intégration..."
-                sh './mvnw test'
+                dir('demo') {
+                    echo "🧪 Exécution des tests..."
+                    sh './mvnw test'
+                }
             }
         }
 
         stage('📦 Build') {
             steps {
-                echo "📦 Construction du JAR..."
-                sh './mvnw clean package -DskipTests'
+                dir('demo') {
+                    echo "📦 Création de l’artefact JAR..."
+                    sh './mvnw clean package'
+                }
             }
         }
 
         stage('📂 Archive') {
             steps {
-                echo "📥 Archivage de l’artefact..."
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                dir('demo') {
+                    echo "📂 Archivage de l’artefact JAR..."
+                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                }
             }
         }
 
+        /**
+        
         stage('🧬 Swagger (optionnel)') {
             when {
                 expression { fileExists('src/main/java/com/example/demo/config/SwaggerConfig.java') }
@@ -63,6 +73,8 @@ pipeline {
                 """
             }
         }
+        
+        **/
     }
 
     post {

@@ -3,17 +3,21 @@ pipeline {
 
     environment {
         MAVEN_OPTS = "-Dmaven.repo.local=.m2/repository"
+        GITHUB_TOKEN = credentials('github-token')
     }
 
     tools {
+        jdk 'java-17'
         maven 'Maven3'
     }
 
     stages {
         stage('📥 Checkout') {
             steps {
-                echo "🔄 Récupération du code source..."
-                git branch: 'main', url: 'https://github.com/SimBienvenueHoulBoumi/demo-rest-api.git'
+                echo "🔄 Clonage du repo GitHub (branche main)..."
+                git branch: 'main',
+                    credentialsId: 'github-token',
+                    url: 'https://github.com/SimBienvenueHoulBoumi/demo-rest-api.git'
             }
         }
 
@@ -26,42 +30,46 @@ pipeline {
 
         stage('🧪 Tests') {
             steps {
-                echo "🧪 Exécution des tests unitaires et d'intégration..."
+                echo "🧪 Tests unitaires et d’intégration..."
                 sh './mvnw test'
             }
         }
 
-        stage('📦 Build & Package') {
+        stage('📦 Build') {
             steps {
-                echo "📦 Construction du JAR Spring Boot..."
+                echo "📦 Construction du JAR..."
                 sh './mvnw clean package -DskipTests'
             }
         }
 
         stage('📂 Archive') {
             steps {
-                echo "🎯 Archivage de l'artefact généré..."
+                echo "📥 Archivage de l’artefact..."
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
 
-        stage('🧬 Swagger Check (optionnel)') {
+        stage('🧬 Swagger (optionnel)') {
             when {
                 expression { fileExists('src/main/java/com/example/demo/config/SwaggerConfig.java') }
             }
             steps {
-                echo "🔍 Swagger détecté, vérification de la doc..."
-                sh "curl -s --fail http://localhost:5000/swagger-ui/index.html || echo 'Swagger UI indisponible (probablement hors contexte Jenkins)'"
+                echo "🔍 Swagger détecté, test de l’interface..."
+                sh """
+                    nohup java -jar target/*.jar & 
+                    sleep 10
+                    curl -s --fail http://localhost:8080/swagger-ui/index.html || echo 'Swagger indisponible... 😿'
+                """
             }
         }
     }
 
     post {
         success {
-            echo '✅ Pipeline terminée avec succès ! 🎉'
+            echo '✅ Pipeline réussie !'
         }
         failure {
-            echo '❌ Une étape a échoué. Consulte les logs Jenkins pour plus d’info 🪵'
+            echo '❌ Une étape a échoué. Check les logs.'
         }
     }
 }

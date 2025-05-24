@@ -4,7 +4,6 @@ pipeline {
     environment {
         MAVEN_OPTS = "-Dmaven.repo.local=.m2/repository"
         GITHUB_TOKEN = credentials('github-token')
-        USE_WRAPPER = '' // sera défini dynamiquement
     }
 
     tools {
@@ -15,16 +14,19 @@ pipeline {
     stages {
         stage('🔍 Détection Maven') {
             steps {
-                echo "🧭 Détection du build tool (mvn ou mvnw)..."
                 script {
+                    def useWrapper = ''
                     if (fileExists('mvnw')) {
                         echo "✅ Maven Wrapper détecté !"
                         sh 'chmod +x mvnw'
-                        env.USE_WRAPPER = './mvnw'
+                        useWrapper = './mvnw'
                     } else {
                         echo "⚠️ Pas de mvnw détecté, fallback sur Maven global"
-                        env.USE_WRAPPER = 'mvn'
+                        useWrapper = 'mvn'
                     }
+
+                    // On stocke dans l’environnement Jenkins pour les étapes suivantes
+                    env.USE_WRAPPER = useWrapper
                 }
             }
         }

@@ -1,5 +1,3 @@
-/*
-
 pipeline {
     agent any
 
@@ -78,23 +76,6 @@ pipeline {
         }
         always {
             echo '📌 Fin du pipeline.'
-        }
-    }
-}
-
-*/
-
-pipeline {
-    agent any
-    stages {
-        stage('Test') {
-            steps {
-                echo '🚀 Le pipeline démarre enfin !'
-                script {
-                    def result = sh(script: 'echo Hello world', returnStdout: true).trim()
-                    echo "🎤 Résultat : ${result}"
-                }
-            }
         }
     }
 }

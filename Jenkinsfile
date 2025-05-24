@@ -90,8 +90,12 @@ pipeline {
         stage('Test') {
             steps {
                 echo '🚀 Le pipeline démarre enfin !'
-                sh 'echo Hello world'
+                script {
+                    def result = sh(script: 'echo Hello world', returnStdout: true).trim()
+                    echo "🎤 Résultat : ${result}"
+                }
             }
         }
     }
 }
+

@@ -1,3 +1,5 @@
+/*
+
 pipeline {
     agent any
 
@@ -76,6 +78,20 @@ pipeline {
         }
         always {
             echo '📌 Fin du pipeline.'
+        }
+    }
+}
+
+*/
+
+pipeline {
+    agent any
+    stages {
+        stage('Test') {
+            steps {
+                echo '🚀 Le pipeline démarre enfin !'
+                sh 'echo Hello world'
+            }
         }
     }
 }

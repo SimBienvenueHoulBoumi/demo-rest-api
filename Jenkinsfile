@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        // Repo local Maven pour éviter de polluer globalement
         MAVEN_OPTS = "-Dmaven.repo.local=.m2/repository"
         GITHUB_TOKEN = credentials('github-token')
     }
@@ -12,21 +13,23 @@ pipeline {
     }
 
     stages {
-        stage('🔍 Détection Maven') {
+        stage('⚙️ Préparation') {
             steps {
                 script {
-                    def useWrapper = ''
+                    // Création du repo Maven local si besoin
+                    sh 'mkdir -p .m2/repository'
+
                     if (fileExists('mvnw')) {
                         echo "✅ Maven Wrapper détecté !"
                         sh 'chmod +x mvnw'
-                        useWrapper = './mvnw'
+                        env.MAVEN_CMD = './mvnw'
                     } else {
-                        echo "⚠️ Pas de mvnw détecté, fallback sur Maven global"
-                        useWrapper = 'mvn'
+                        echo "⚠️ Pas de mvnw, fallback sur Maven global"
+                        env.MAVEN_CMD = 'mvn'
                     }
 
-                    // On stocke dans l’environnement Jenkins pour les étapes suivantes
-                    env.USE_WRAPPER = useWrapper
+                    // Petit test de version pour rassurer tout le monde
+                    sh "${env.MAVEN_CMD} --version"
                 }
             }
         }
@@ -40,28 +43,28 @@ pipeline {
 
         stage('🔧 Compilation') {
             steps {
-                echo "⚙️ Compilation du projet Spring Boot..."
-                sh "${env.USE_WRAPPER} clean compile"
+                echo "⚙️ Compilation en cours..."
+                sh "${env.MAVEN_CMD} clean compile"
             }
         }
 
         stage('🧪 Tests') {
             steps {
-                echo "🧪 Exécution des tests unitaires..."
-                sh "${env.USE_WRAPPER} test"
+                echo "🧪 Tests unitaires..."
+                sh "${env.MAVEN_CMD} test"
             }
         }
 
         stage('📦 Build') {
             steps {
-                echo "📦 Construction de l’artefact JAR..."
-                sh "${env.USE_WRAPPER} package"
+                echo "📦 Packaging JAR..."
+                sh "${env.MAVEN_CMD} package"
             }
         }
 
         stage('📂 Archivage') {
             steps {
-                echo "📂 Archivage de l’artefact généré..."
+                echo "📂 Archivage..."
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
@@ -69,14 +72,13 @@ pipeline {
 
     post {
         success {
-            echo '✅ Pipeline exécutée avec succès 🎉'
+            echo '✅ Pipeline terminée avec succès 🎉'
         }
         failure {
-            echo '❌ Une erreur est survenue. Check tes logs, padawan.'
+            echo '❌ Pipeline échouée. Plonge dans les logs, apprenti.'
         }
         always {
             echo '📌 Fin du pipeline.'
         }
     }
 }
-

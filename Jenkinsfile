@@ -1,4 +1,5 @@
 pipeline {
+
     agent {
         docker {
             image 'maven:3.9.6-eclipse-temurin-17'
@@ -6,9 +7,13 @@ pipeline {
         }
     }
 
+    tools {
+        jdk 'java',
+        maven 'maven'
+    }
+
     environment {
         MAVEN_OPTS = "-Dmaven.repo.local=.m2/repository"
-        GITHUB_TOKEN = credentials('github-token')
     }
 
     stages {

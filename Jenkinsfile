@@ -1,84 +1,36 @@
 pipeline {
-    agent any
-
-    environment {
-        // Repo local Maven pour éviter de polluer globalement
-        MAVEN_OPTS = "-Dmaven.repo.local=.m2/repository"
-        GITHUB_TOKEN = credentials('github-token')
+    agent {
+        docker {
+            image 'maven:3.9.6-eclipse-temurin-17'
+            args '-v $HOME/.m2:/root/.m2'
+        }
     }
 
-    tools {
-        jdk 'jdk'
-        maven 'maven'
+    environment {
+        MAVEN_OPTS = "-Dmaven.repo.local=.m2/repository"
+        GITHUB_TOKEN = credentials('github-token')
     }
 
     stages {
         stage('⚙️ Préparation') {
             steps {
+                cleanWs()
                 script {
-                    // Création du repo Maven local si besoin
-                    sh 'mkdir -p .m2/repository'
-
-                    if (fileExists('mvnw')) {
-                        echo "✅ Maven Wrapper détecté !"
-                        sh 'chmod +x mvnw'
-                        env.MAVEN_CMD = './mvnw'
-                    } else {
-                        echo "⚠️ Pas de mvnw, fallback sur Maven global"
-                        env.MAVEN_CMD = 'mvn'
-                    }
-
-                    // Petit test de version pour rassurer tout le monde
-                    sh "${env.MAVEN_CMD} --version"
+                    if (!fileExists('pom.xml')) error "pom.xml manquant"
                 }
             }
         }
 
-        stage('📁 Diagnostic du workspace') {
+        stage('📦 Build Maven') {
             steps {
-                echo "🕵️‍♂️ Listing des fichiers..."
-                sh 'ls -al'
+                sh 'mvn clean install -B'
             }
         }
 
-        stage('🔧 Compilation') {
+        stage('✅ Tests') {
             steps {
-                echo "⚙️ Compilation en cours..."
-                sh "${env.MAVEN_CMD} clean compile"
+                sh 'mvn test'
             }
-        }
-
-        stage('🧪 Tests') {
-            steps {
-                echo "🧪 Tests unitaires..."
-                sh "${env.MAVEN_CMD} test"
-            }
-        }
-
-        stage('📦 Build') {
-            steps {
-                echo "📦 Packaging JAR..."
-                sh "${env.MAVEN_CMD} package"
-            }
-        }
-
-        stage('📂 Archivage') {
-            steps {
-                echo "📂 Archivage..."
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-            }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Pipeline terminée avec succès 🎉'
-        }
-        failure {
-            echo '❌ Pipeline échouée. Plonge dans les logs, apprenti.'
-        }
-        always {
-            echo '📌 Fin du pipeline.'
         }
     }
 }

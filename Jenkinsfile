@@ -67,5 +67,19 @@ pipeline {
                 sh 'mvn test'
             }
         }
+         /*
+         * [9] ÉTAPE CHECKSTYLE - ANALYSE DE CODE
+         * Vérifie la conformité du code aux standards
+        */
+        stage('Checkstyle Analysis') {
+            steps {
+                /*
+                * Commande Maven:
+                * - checkstyle:checkstyle : exécute l'analyse Checkstyle
+                * Génère un rapport dans target/checkstyle-result.xml
+                */
+                sh 'mvn checkstyle:checkstyle'
+            } 
+        }
     }
 }

@@ -8,7 +8,7 @@ pipeline {
     }
 
     tools {
-        jdk 'java',
+        jdk 'java'
         maven 'maven'
     }
 

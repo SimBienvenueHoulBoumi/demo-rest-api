@@ -11,6 +11,12 @@ pipeline {
         TARGET_DIR = 'target'
     }
 
+    triggers {
+     githubPush()
+    // gitlabPush() // Si GitLab
+    }
+
+
     stages {
 
         stage('Build') {
@@ -45,7 +51,7 @@ pipeline {
             }
             post {
                 always {
-                    junit "${TARGET_DIR}//failsafe-reports/*.xml"
+                    junit "${TARGET_DIR}/failsafe-reports/*.xml"
                 }
             }
         }

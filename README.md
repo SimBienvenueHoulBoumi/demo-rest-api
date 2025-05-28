@@ -47,6 +47,8 @@ src
 
 ```bash
 ./mvnw test
+
+## installer les dependences
 ```
 
 ## lancer le pro

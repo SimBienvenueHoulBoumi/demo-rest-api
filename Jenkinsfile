@@ -1,85 +1,111 @@
-
-/*
- * [1] DÉCLARATION DU PIPELINE
- * Définit un pipeline Jenkins qui s'exécutera sur un agent spécifique
-*/
 pipeline {
-    /*
-     * [2] CONFIGURATION DE L'AGENT
-     * Spécifie que le pipeline s'exécutera sur un nœud Jenkins avec le label 'jenkins-agent'
-    */
     agent { label 'jenkins-agent' }
 
-    /*
-     * [3] CONFIGURATION DES OUTILS
-     * Définit les outils nécessaires qui doivent être préconfigurés dans Jenkins
-    */
     tools {
-        jdk "JDK17"       // Requiert JDK 17 configuré dans "Manage Jenkins > Global Tool Configuration"
-        maven "MAVEN3.9"  // Requiert Maven 3.9 configuré de la même manière
+        jdk 'JDK17'
+        maven 'MAVEN3.9'
     }
 
-    /*
-     * [3] ÉTAPES DU PIPELINE
-     * Contient toutes les étapes d'exécution séquentielles
-    */
+    environment {
+        JAR_NAME = 'demo-0.0.1-SNAPSHOT.jar'
+        TARGET_DIR = 'target'
+    }
+
     stages {
-        /*
-         * [6] ÉTAPE BUILD - COMPILATION
-         * Compile le code source et génère les artefacts
-        */
+
         stage('Build') {
             steps {
-                /*
-                * Exécute la commande Maven pour :
-                * - clean : nettoie le répertoire target
-                * - install : installe l'artefact dans le repository local
-                * - -DskipTests : saute l'exécution des tests pour accélérer le build
-                */
+                echo "⛏️ Compilation..."
                 sh 'mvn clean install -DskipTests'
             }
-
-            /*
-             * [7] POST-ACTIONS DU BUILD
-             * Actions exécutées après l'étape de build selon son statut
-            */
             post {
                 success {
-                    echo "Build réussi - Archivage des artefacts..."
-                    // Archive tous les fichiers .jar trouvés dans le sous-répertoire target de demo-rest-api
-                    archiveArtifacts artifacts: 'target/*.jar'
+                    archiveArtifacts artifacts: "${TARGET_DIR}/*.jar", fingerprint: true
                 }
             }
         }
 
-        /*
-         * [8] ÉTAPE TEST - TESTS UNITAIRES
-         * Exécute les tests unitaires et génère des rapports
-         * Ne s'exécute que si l'étape Build a réussi
-        */
-        stage('Test') {
+        stage('Unit Tests') {
             steps {
-                /*
-                * Commande Maven:
-                * - test : exécute les tests unitaires
-                * Génère des rapports dans target/surefire-reports/
-                */
+                echo "🧪 Tests unitaires..."
                 sh 'mvn test'
             }
+            post {
+                always {
+                    junit "${TARGET_DIR}/surefire-reports/*.xml"
+                }
+            }
         }
-         /*
-         * [9] ÉTAPE CHECKSTYLE - ANALYSE DE CODE
-         * Vérifie la conformité du code aux standards
-        */
+
+        stage('Integration Tests') {
+            steps {
+                echo "🧬 Tests d’intégration..."
+                sh 'mvn verify -DskipUnitTests=true'
+            }
+            post {
+                always {
+                    junit "${TARGET_DIR}//failsafe-reports/*.xml"
+                }
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                echo "🛡️ Analyse de dépendances (OWASP)..."
+                sh 'mvn org.owasp:dependency-check-maven:check'
+            }
+            post {
+                always {
+                    publishHTML([
+                        reportDir: "${TARGET_DIR}",
+                        reportFiles: 'dependency-check-report.html',
+                        reportName: 'OWASP Dependency Check'
+                    ])
+                }
+            }
+        }
+
         stage('Checkstyle Analysis') {
             steps {
-                /*
-                * Commande Maven:
-                * - checkstyle:checkstyle : exécute l'analyse Checkstyle
-                * Génère un rapport dans target/checkstyle-result.xml
-                */
+                echo "🔍 Checkstyle..."
                 sh 'mvn checkstyle:checkstyle'
-            } 
+            }
+            post {
+                always {
+                    recordIssues tools: [checkStyle(pattern: "${TARGET_DIR}/checkstyle-result.xml")]
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                echo "🐳 Docker build multi-stage..."
+                sh 'docker build -t springboot-app:latest .'
+            }
+        }
+
+        // Optionnel : si tu veux un sonar
+        /*
+        stage('SonarQube Analysis') {
+            steps {
+                echo "📡 Envoi vers SonarQube..."
+                withSonarQubeEnv('MySonarQube') {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+        */
+    }
+
+    post {
+        always {
+            echo '🏁 Pipeline terminé.'
+        }
+        success {
+            echo '🎉 Succès complet du pipeline !'
+        }
+        failure {
+            echo '💥 Le pipeline a échoué...'
         }
     }
 }

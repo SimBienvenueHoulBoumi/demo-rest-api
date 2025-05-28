@@ -28,6 +28,7 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 echo "🧪 Tests unitaires..."
+                sh 'ls -R target'
                 sh 'mvn test'
             }
             post {

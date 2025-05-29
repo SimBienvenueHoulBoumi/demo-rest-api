@@ -22,6 +22,14 @@
   <properties>
     <java.version>17</java.version>
     <checkstyle.version>3.4.0</checkstyle.version>
+    <h2.version>2.3.232</h2.version>
+    <springdoc.version>2.8.8</springdoc.version>
+    <spring-framework.version>7.0.0-M5</spring-framework.version>
+    <tomcat.version>10.1.40</tomcat.version>
+	<mockito.version>5.7.0</mockito.version>
+	<maven-surefire-plugin.version>5.7.0</maven-surefire-plugin.version>
+	<dependency-check-maven.version>12.1.1</dependency-check-maven.version>
+	<maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
   </properties>
 
   <dependencies>
@@ -52,15 +60,17 @@
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>2.6.0</version>
+      <version>${springdoc.version}</version>
     </dependency>
 
     <!-- H2 Database -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
       <scope>runtime</scope>
     </dependency>
+	<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
 
     <!-- Test Dependencies -->
     <dependency>
@@ -71,10 +81,29 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>5.7.0</version>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Override Spring Framework version -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>${spring-framework.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Override Tomcat version -->
+      <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>${tomcat.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <plugins>
@@ -96,28 +125,28 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M7</version>
+        <version>{maven-surefire-plugin.version}</version>
       </plugin>
 
-	  <plugin>
-		<groupId>org.owasp</groupId>
-		<artifactId>dependency-check-maven</artifactId>
-		<version>12.1.1</version> <!-- Tu peux vérifier sur https://search.maven.org/artifact/org.owasp/dependency-check-maven -->
-		<executions>
-			<execution>
+      <!-- OWASP Dependency Check plugin -->
+	 <plugin>
+       <groupId>org.owasp</groupId>
+	   <artifactId>dependency-check-maven</artifactId>
+	   <version>${dependency-check-maven.version}</version>
+	   <executions>
+		  <execution>
 			<goals>
 				<goal>check</goal>
 			</goals>
-			</execution>
-		</executions>
-	</plugin>
-
+		  </execution>
+	   </executions>
+	 </plugin>
 
       <!-- Integration Tests -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.0.0-M7</version>
+        <version>{maven-failsafe-plugin.version}</version>
         <executions>
           <execution>
             <goals>
@@ -130,7 +159,6 @@
           <reportsDirectory>${project.build.directory}/failsafe-reports</reportsDirectory>
         </configuration>
       </plugin>
-	
     </plugins>
   </build>
 

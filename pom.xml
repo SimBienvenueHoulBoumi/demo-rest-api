@@ -29,7 +29,8 @@
     <mockito.version>5.7.0</mockito.version>
     <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
     <dependency-check-maven.version>12.1.0</dependency-check-maven.version>
-    <maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
+	<maven-failsafe-plugin.version>10.8.0</maven-failsafe-plugin.version>
+	<maven-core.version>3.8.7</maven-core.version>
   </properties>
 
 
@@ -56,6 +57,13 @@
       <artifactId>lombok</artifactId>
       <optional>true</optional>
     </dependency>
+
+	<!-- https://mvnrepository.com/artifact/org.owasp/dependency-check-maven -->
+	<dependency>
+		<groupId>org.owasp</groupId>
+		<artifactId>dependency-check-maven</artifactId>
+		<version>${dependency-check-maven.version}</version>
+	</dependency>
 
     <!-- Documentation -->
     <dependency>
@@ -107,6 +115,12 @@
         <artifactId>snakeyaml</artifactId>
         <version>${snakeyaml.version}</version>
       </dependency>
+	  <!-- Override Maven Core version -->
+	  <dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-core</artifactId>
+			<version>${maven-core.version}</version>
+		</dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -135,23 +149,24 @@
 
       <!-- OWASP Dependency Check plugin -->
       <plugin>
-        <groupId>org.owasp</groupId>
-        <artifactId>dependency-check-maven</artifactId>
-        <version>${dependency-check-maven.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <failBuildOnCVSS>7</failBuildOnCVSS>
-          <ossIndexEnabled>false</ossIndexEnabled>
-          <nvdApiKey>your-nvd-api-key</nvdApiKey> <!-- Replace with your NVD API key if available -->
-          <connectionTimeout>30000</connectionTimeout>
-        </configuration>
-      </plugin>
+		<groupId>org.owasp</groupId>
+		<artifactId>dependency-check-maven</artifactId>
+		<version>${dependency-check-maven.version}</version>
+		<executions>
+		<execution>
+			<goals>
+			<goal>check</goal>
+			</goals>
+		</execution>
+		</executions>
+		<configuration>
+		<failBuildOnCVSS>7</failBuildOnCVSS>
+		<ossIndexEnabled>false</ossIndexEnabled>
+		<autoUpdate>true</autoUpdate> <!-- Disable NVD API updates -->
+		<nvdDatafeedUrl></nvdDatafeedUrl> <!-- Disable NVD data feed -->
+		<connectionTimeout>30000</connectionTimeout>
+		</configuration>
+	</plugin>
 
       <!-- Integration Tests -->
       <plugin>

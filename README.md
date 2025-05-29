@@ -43,6 +43,11 @@ src
 
 ---
 
+```bash
+# Installer dotnet-sdk-8.6 pour dependensy check
+sudo apt install -y dotnet-sdk-8.0
+```
+
 ## 🥪 Lancer les tests
 
 ```bash
@@ -114,4 +119,5 @@ N’hésite pas à forker, tester, ou me faire un retour ✌️
 ## 📝 Licence
 
 Ce projet est sous licence MIT. Tu peux l’utiliser comme base de ton propre projet.
+
 

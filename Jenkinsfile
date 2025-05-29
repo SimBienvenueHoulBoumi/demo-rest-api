@@ -81,6 +81,9 @@ pipeline {
                         reportName: 'OWASP Dependency Check'
                     ])
                 }
+                failure {
+                    slackSend channel: '#builds', color: 'danger', message: "OWASP Check failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+                }
             }
         }
 

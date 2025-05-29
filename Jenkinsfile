@@ -48,18 +48,16 @@ pipeline {
             }
         }
 
-        stage('Check Tests Found') {
+        stage('🔎 Détection des Tests d’Intégration') {
             steps {
-                echo "🔎 Inspection des tests d’intégration trouvés :"
+                echo "🧐 Inspection des tests d’intégration trouvés :"
                 sh 'find src/test/java -name "*IT.java"'
             }
         }
 
-
-        stage('Integration Tests') {
+        stage('🧬 Tests d’Intégration') {
             steps {
                 echo "🧬 Tests d’intégration... (en pause, pas encore de tests)"
-                // On saute ou on lance une commande vide si tu veux
                 sh 'mvn verify'
             }
             post {
@@ -85,8 +83,6 @@ pipeline {
                 }
             }
         }
-
-        // Adieu Checkstyle, on garde le flow, on coupe le parasite
 
         stage('🐳 Construction Docker') {
             steps {

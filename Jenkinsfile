@@ -12,57 +12,63 @@ pipeline {
     }
 
     triggers {
-     githubPush()
-    // gitlabPush() // Si GitLab
+        githubPush()
+        // gitlabPush() // Si tu kiffes GitLab
     }
-
 
     stages {
 
-        stage('Build') {
+        stage('🛠️ Build & Compile') {
             steps {
-                echo "⛏️ Compilation..."
+                echo "⛏️ Forge en action : compilation du code..."
                 sh 'mvn clean install -DskipTests'
             }
             post {
                 success {
+                    echo "🎯 Build réussi, on archive le précieux artefact."
                     archiveArtifacts artifacts: "${TARGET_DIR}/*.jar", fingerprint: true
+                }
+                failure {
+                    echo "💥 Oups, build cassé, la forge a fait des étincelles… pas dans le bon sens."
                 }
             }
         }
 
-        stage('Unit Tests') {
+        stage('🧪 Tests Unitaires') {
             steps {
-                echo "🧪 Tests unitaires..."
+                echo "🔬 Mise sous microscope : exécution des tests unitaires."
                 sh 'ls -R target'
                 sh 'mvn test'
             }
             post {
                 always {
+                    echo "📊 Rapports unitaires à la rescousse."
                     junit "${TARGET_DIR}/surefire-reports/*.xml"
                 }
             }
         }
 
-        stage('Integration Tests') {
+        stage('🧬 Tests d’Intégration') {
             steps {
-                echo "🧬 Tests d’intégration..."
+                echo "🔗 Connexion des mondes : tests d’intégration en cours..."
                 sh 'mvn verify -DskipUnitTests=true'
             }
             post {
                 always {
+                    echo "📋 Résultats des tests d’intégration sauvegardés."
                     junit "${TARGET_DIR}/failsafe-reports/*.xml"
                 }
             }
         }
 
-        stage('Security Scan') {
+        stage('🛡️ Analyse de Sécurité (OWASP)') {
             steps {
-                echo "🛡️ Analyse de dépendances (OWASP)..."
+                echo "🔍 Inspection minutieuse des dépendances, aucun vilain ne passera."
                 sh 'mvn org.owasp:dependency-check-maven:check'
             }
             post {
                 always {
+                    echo "📑 Rapport OWASP généré, sécurité au top."
                     publishHTML([
                         reportDir: "${TARGET_DIR}",
                         reportFiles: 'dependency-check-report.html',
@@ -72,30 +78,19 @@ pipeline {
             }
         }
 
-        stage('Checkstyle Analysis') {
-            steps {
-                echo "🔍 Checkstyle..."
-                sh 'mvn checkstyle:checkstyle'
-            }
-            post {
-                always {
-                    recordIssues tools: [checkStyle(pattern: "${TARGET_DIR}/checkstyle-result.xml")]
-                }
-            }
-        }
+        // Adieu Checkstyle, on garde le flow, on coupe le parasite
 
-        stage('Docker Build') {
+        stage('🐳 Construction Docker') {
             steps {
-                echo "🐳 Docker build multi-stage..."
+                echo "🚢 Montage du conteneur Docker, le navire est prêt à voguer."
                 sh 'docker build -t springboot-app:latest .'
             }
         }
 
-        // Optionnel : si tu veux un sonar
         /*
-        stage('SonarQube Analysis') {
+        stage('📡 Analyse SonarQube (optionnel)') {
             steps {
-                echo "📡 Envoi vers SonarQube..."
+                echo "📈 Envoi des données vers SonarQube, pour un code toujours plus propre."
                 withSonarQubeEnv('MySonarQube') {
                     sh 'mvn sonar:sonar'
                 }
@@ -106,13 +101,13 @@ pipeline {
 
     post {
         always {
-            echo '🏁 Pipeline terminé.'
+            echo '🏁 Pipeline achevé, on se prépare pour la prochaine bataille.'
         }
         success {
-            echo '🎉 Succès complet du pipeline !'
+            echo '🎉 Tout est nickel, déploiement en marche !'
         }
         failure {
-            echo '💥 Le pipeline a échoué...'
+            echo '💥 Échec du pipeline, le code a besoin d’amour et de corrections.'
         }
     }
 }

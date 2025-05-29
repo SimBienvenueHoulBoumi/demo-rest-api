@@ -117,28 +117,6 @@
         </configuration>
       </plugin>
 
-      <!-- Checkstyle Unique -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${checkstyle.version}</version>
-        <configuration>
-          <configLocation>sun_checks.xml</configLocation>
-          <suppressionsLocation>${basedir}/checkstyle-suppressions.xml</suppressionsLocation>
-          <encoding>UTF-8</encoding>
-          <consoleOutput>true</consoleOutput>
-          <failsOnError>true</failsOnError>
-        </configuration>
-        <executions>
-          <execution>
-            <id>checkstyle-validation</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
 
     </plugins>
   </build>

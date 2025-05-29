@@ -27,7 +27,7 @@
     <spring-framework.version>7.0.0-M5</spring-framework.version>
     <tomcat.version>10.1.40</tomcat.version>
 	<mockito.version>5.7.0</mockito.version>
-	<maven-surefire-plugin.version>5.7.0</maven-surefire-plugin.version>
+	<maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
 	<dependency-check-maven.version>12.1.1</dependency-check-maven.version>
 	<maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
   </properties>
@@ -126,6 +126,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
+		
       </plugin>
 
       <!-- OWASP Dependency Check plugin -->

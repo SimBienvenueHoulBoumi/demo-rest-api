@@ -99,6 +99,20 @@
         <version>3.0.0-M7</version>
       </plugin>
 
+	  <plugin>
+		<groupId>org.owasp</groupId>
+		<artifactId>dependency-check-maven</artifactId>
+		<version>12.1.1</version> <!-- Tu peux vérifier sur https://search.maven.org/artifact/org.owasp/dependency-check-maven -->
+		<executions>
+			<execution>
+			<goals>
+				<goal>check</goal>
+			</goals>
+			</execution>
+		</executions>
+	</plugin>
+
+
       <!-- Integration Tests -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

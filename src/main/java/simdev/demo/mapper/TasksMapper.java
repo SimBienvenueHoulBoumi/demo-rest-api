@@ -1,16 +1,29 @@
 package simdev.demo.mapper;
 
-
 import java.time.Instant;
 import java.util.Date;
 
 import simdev.demo.dto.TasksDto;
 import simdev.demo.models.Tasks;
 
-public class TasksMapper {
+/**
+ * Utility class for mapping between TasksDto and Tasks entities.
+ */
+public final class TasksMapper {
 
-    public static Tasks toEntity(TasksDto dto) {
-        if (dto == null) return null;
+    private TasksMapper() {
+        // Prevent instantiation
+    }
+
+    /**
+     * Converts a TasksDto to a Tasks entity.
+     * @param dto the TasksDto to convert
+     * @return the converted Tasks entity, or null if the input is null
+     */
+    public static Tasks toEntity(final TasksDto dto) {
+        if (dto == null) {
+            return null;
+        }
 
         Instant now = Instant.now();
 
@@ -23,8 +36,15 @@ public class TasksMapper {
                 .build();
     }
 
-    public static TasksDto toDto(Tasks entity) {
-        if (entity == null) return null;
+    /**
+     * Converts a Tasks entity to a TasksDto.
+     * @param entity the Tasks entity to convert
+     * @return the converted TasksDto, or null if the input is null
+     */
+    public static TasksDto toDto(final Tasks entity) {
+        if (entity == null) {
+            return null;
+        }
 
         return TasksDto.builder()
                 .name(entity.getName())

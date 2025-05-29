@@ -1,6 +1,5 @@
 package simdev.demo.services;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -32,7 +31,7 @@ class TasksServiceTest {
     void createTask_shouldCreateNewTask() {
         TasksDto dto = new TasksDto("Task 1", "Description", "TODO");
 
-        when(tasksRepository.getByName("Task 1")).thenReturn(null);
+        when(tasksRepository.findByName("Task 1")).thenReturn(Optional.empty());
         when(tasksRepository.save(any(Tasks.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Tasks savedTask = tasksService.createTask(dto);
@@ -42,7 +41,7 @@ class TasksServiceTest {
         assertThat(savedTask.getDescription()).isEqualTo("Description");
         assertThat(savedTask.getCreatedAt()).isNotNull();
         assertThat(savedTask.getUpdatedAt()).isNotNull();
-        verify(tasksRepository).getByName("Task 1");
+        verify(tasksRepository).findByName("Task 1");
         verify(tasksRepository).save(any(Tasks.class));
     }
 
@@ -50,7 +49,7 @@ class TasksServiceTest {
     void createTask_shouldThrowIfTaskExists() {
         TasksDto dto = new TasksDto("Existing", "Desc", "TODO");
 
-        when(tasksRepository.getByName("Existing")).thenReturn(new Tasks());
+        when(tasksRepository.findByName("Existing")).thenReturn(Optional.of(new Tasks()));
 
         assertThatThrownBy(() -> tasksService.createTask(dto))
                 .isInstanceOf(TaskNotFoundException.class)
@@ -124,4 +123,3 @@ class TasksServiceTest {
         assertThat(result.get(0).getName()).isEqualTo("Task1");
     }
 }
-

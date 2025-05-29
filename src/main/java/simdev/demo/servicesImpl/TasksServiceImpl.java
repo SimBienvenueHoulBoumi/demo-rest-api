@@ -16,14 +16,19 @@ import simdev.demo.mapper.TasksMapper;
 
 @Service
 @AllArgsConstructor
-public class TasksServiceImpl implements TasksService {
+public final class TasksServiceImpl implements TasksService {
 
+    /**
+     * Repository pour l'accès aux données des tâches.
+     */
     private final TasksRepository tasksRepository;
 
     @Override
-    public Tasks createTask(TasksDto newTask) {
-        if (tasksRepository.getByName(newTask.getName()) != null) {
-            throw new TaskNotFoundException("Task already exists with name: " + newTask.getName());
+    public Tasks createTask(final TasksDto newTask) {
+        if (tasksRepository.findByName(newTask.getName()).isPresent()) {
+            throw new TaskNotFoundException(
+                "Task already exists with name: " + newTask.getName()
+            );
         }
 
         Tasks task = TasksMapper.toEntity(newTask);
@@ -31,15 +36,17 @@ public class TasksServiceImpl implements TasksService {
     }
 
     @Override
-    public Tasks getTaskById(Long id) {
+    public Tasks getTaskById(final Long id) {
         return tasksRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
+            .orElseThrow(() -> new TaskNotFoundException(
+                "Task not found with id: " + id));
     }
 
     @Override
-    public void updateTask(Long id, TasksDto taskDto) {
+    public void updateTask(final Long id, final TasksDto taskDto) {
         Tasks existingTask = tasksRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
+            .orElseThrow(() -> new TaskNotFoundException(
+                "Task not found with id: " + id));
 
         existingTask.setName(taskDto.getName());
         existingTask.setDescription(taskDto.getDescription());
@@ -50,9 +57,10 @@ public class TasksServiceImpl implements TasksService {
     }
 
     @Override
-    public void deleteTask(Long id) {
+    public void deleteTask(final Long id) {
         Tasks task = tasksRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
+            .orElseThrow(() -> new TaskNotFoundException(
+                "Task not found with id: " + id));
 
         tasksRepository.delete(task);
     }

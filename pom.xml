@@ -116,8 +116,7 @@
           <reportsDirectory>${project.build.directory}/failsafe-reports</reportsDirectory>
         </configuration>
       </plugin>
-
-
+	
     </plugins>
   </build>
 

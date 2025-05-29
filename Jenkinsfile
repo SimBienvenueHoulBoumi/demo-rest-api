@@ -48,6 +48,14 @@ pipeline {
             }
         }
 
+        stage('Check Tests Found') {
+            steps {
+                echo "🔎 Inspection des tests d’intégration trouvés :"
+                sh 'find src/test/java -name "*IT.java"'
+            }
+        }
+
+
         stage('🧬 Tests d’Intégration') {
             steps {
                 echo "🔗 Connexion des mondes : tests d’intégration en cours..."

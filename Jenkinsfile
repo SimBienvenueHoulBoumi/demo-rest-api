@@ -56,15 +56,15 @@ pipeline {
         }
 
 
-        stage('🧬 Tests d’Intégration') {
+        stage('Integration Tests') {
             steps {
-                echo "🔗 Connexion des mondes : tests d’intégration en cours..."
-                sh 'mvn verify -DskipUnitTests=true'
+                echo "🧬 Tests d’intégration... (en pause, pas encore de tests)"
+                // On saute ou on lance une commande vide si tu veux
+                sh 'echo "Pas de tests d’intégration pour le moment"'
             }
             post {
                 always {
-                    echo "📋 Résultats des tests d’intégration sauvegardés."
-                    junit "${TARGET_DIR}/failsafe-reports/*.xml"
+                    junit allowEmptyResults: true, testResults: "${TARGET_DIR}/failsafe-reports/*.xml"
                 }
             }
         }

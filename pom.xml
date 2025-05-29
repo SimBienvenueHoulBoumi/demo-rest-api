@@ -28,7 +28,7 @@
     <tomcat.version>10.1.40</tomcat.version>
 	<mockito.version>5.7.0</mockito.version>
 	<maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
-	<dependency-check-maven.version>12.1.1</dependency-check-maven.version>
+	<dependency-check-maven.version>12.1.0</dependency-check-maven.version>
 	<maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
   </properties>
 
@@ -134,6 +134,7 @@
        <groupId>org.owasp</groupId>
 	   <artifactId>dependency-check-maven</artifactId>
 	   <version>${dependency-check-maven.version}</version>
+	   
 	   <executions>
 		  <execution>
 			<goals>

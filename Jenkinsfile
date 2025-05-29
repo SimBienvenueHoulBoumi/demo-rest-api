@@ -60,7 +60,7 @@ pipeline {
             steps {
                 echo "🧬 Tests d’intégration... (en pause, pas encore de tests)"
                 // On saute ou on lance une commande vide si tu veux
-                sh 'echo "Pas de tests d’intégration pour le moment"'
+                sh 'mvn verify'
             }
             post {
                 always {

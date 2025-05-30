@@ -57,7 +57,7 @@ pipeline {
 
         stage('🧬 Tests d’Intégration') {
             steps {
-                echo "🧬 Tests d’intégration... (en pause, pas encore de tests)"
+                echo "🧬 Tests d’intégration"
                 sh 'mvn verify'
             }
             post {

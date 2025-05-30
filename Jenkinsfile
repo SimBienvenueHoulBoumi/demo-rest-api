@@ -18,6 +18,31 @@ pipeline {
 
     stages {
 
+        stage('Debug réseau OSS Index') {
+            steps {
+                echo "🔍 Vérification de la connectivité réseau vers OSS Index..."
+                sh 'nslookup ossindex.sonatype.org || true'
+                sh 'ping -c 3 ossindex.sonatype.org || true'
+            }
+        }
+
+        stage('📦 Mise a jour des dépendances') {
+            steps {
+                echo "🔄 Mise à jour des dépendances Maven, on s’assure que tout est à jour."
+                sh 'mvn versions:display-dependency-updates'
+            }
+            post {
+                success {
+                    echo "✅ Dépendances mises à jour avec succès."
+                }
+                failure {
+                    echo "⚠️ Échec de la mise à jour des dépendances, vérifiez les logs."
+                }
+            }
+           
+        }
+
+
         stage('🛠️ Build & Compile') {
             steps {
                 echo "⛏️ Forge en action : compilation du code..."

@@ -176,11 +176,11 @@
         <artifactId>dependency-check-maven</artifactId>
         <version>${dependency-check-maven.version}</version>
         <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
         </executions>
         <configuration>
           <failBuildOnCVSS>7</failBuildOnCVSS>
@@ -190,6 +190,13 @@
           <connectionTimeout>30000</connectionTimeout>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.sonatype.ossindex.maven</groupId>
+        <artifactId>ossindex-maven-plugin</artifactId>
+        <version>3.1.0</version>
+      </plugin>
+
 
       <!-- Integration Tests -->
       <plugin>

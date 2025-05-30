@@ -61,6 +61,9 @@ sudo apt install -y dotnet-sdk-8.0
 ```bash
 mvn clean install && mvn spring-boot:run
 
+## supprimé toute les dependances enregistrées
+rm -rf ~/.m2/repository
+
 ---
 
 

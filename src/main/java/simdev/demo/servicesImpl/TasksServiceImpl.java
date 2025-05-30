@@ -9,19 +9,17 @@ import org.springframework.stereotype.Service;
 import lombok.AllArgsConstructor;
 import simdev.demo.dto.TasksDto;
 import simdev.demo.exceptions.TaskNotFoundException;
+import simdev.demo.mapper.TasksMapper;
 import simdev.demo.models.Tasks;
 import simdev.demo.repositories.TasksRepository;
 import simdev.demo.services.TasksService;
-import simdev.demo.mapper.TasksMapper;
 
 @Service
 @AllArgsConstructor
 public final class TasksServiceImpl implements TasksService {
 
-    /**
-     * Repository pour l'accès aux données des tâches.
-     */
     private final TasksRepository tasksRepository;
+    private final TasksMapper tasksMapper;
 
     @Override
     public Tasks createTask(final TasksDto newTask) {
@@ -31,7 +29,7 @@ public final class TasksServiceImpl implements TasksService {
             );
         }
 
-        Tasks task = TasksMapper.toEntity(newTask);
+        Tasks task = tasksMapper.toEntity(newTask);
         return tasksRepository.save(task);
     }
 

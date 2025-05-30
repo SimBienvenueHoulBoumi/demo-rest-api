@@ -3,7 +3,7 @@
   xmlns="http://maven.apache.org/POM/4.0.0" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  
+
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -27,12 +27,13 @@
     <tomcat.version>10.1.40</tomcat.version>
     <snakeyaml.version>2.4</snakeyaml.version>
     <mockito.version>5.7.0</mockito.version>
-    <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>3.0.0-M8</maven-surefire-plugin.version> <!-- Version standard et stable -->
     <dependency-check-maven.version>12.1.0</dependency-check-maven.version>
-	<maven-failsafe-plugin.version>10.8.0</maven-failsafe-plugin.version>
-	<maven-core.version>3.8.7</maven-core.version>
+    <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
+    <maven-core.version>3.8.7</maven-core.version>
+    <maven-mockito-junit-jupiter.version>5.7.0</maven-mockito-junit-jupiter.version> <!-- Aligné à mockito.version -->
+    <maven-mockito-core.version>5.7.0</maven-mockito-core.version> <!-- Aligné à mockito.version -->
   </properties>
-
 
   <dependencies>
     <!-- Spring Boot Dependencies -->
@@ -58,12 +59,8 @@
       <optional>true</optional>
     </dependency>
 
-	<!-- https://mvnrepository.com/artifact/org.owasp/dependency-check-maven -->
-	<dependency>
-		<groupId>org.owasp</groupId>
-		<artifactId>dependency-check-maven</artifactId>
-		<version>${dependency-check-maven.version}</version>
-	</dependency>
+    <!-- OWASP Dependency Check (ce plugin, pas une dépendance classique) -->
+    <!-- Tu peux retirer cette dépendance, c’est géré via plugin -->
 
     <!-- Documentation -->
     <dependency>
@@ -79,12 +76,27 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- Mockito JUnit Jupiter -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version> 
+      <scope>test</scope>
+    </dependency>
+
     <!-- Test Dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -103,24 +115,35 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
       <!-- Override Tomcat version -->
       <dependency>
         <groupId>org.apache.tomcat.embed</groupId>
         <artifactId>tomcat-embed-core</artifactId>
         <version>${tomcat.version}</version>
       </dependency>
+
       <!-- Override SnakeYAML -->
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
         <version>${snakeyaml.version}</version>
       </dependency>
-	  <!-- Override Maven Core version -->
-	  <dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-core</artifactId>
-			<version>${maven-core.version}</version>
-		</dependency>
+
+      <!-- Override Maven Core version -->
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${maven-core.version}</version>
+      </dependency>
+
+      <!-- Mockito BOM or JUnit Jupiter -->
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>${maven-mockito-junit-jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -149,24 +172,24 @@
 
       <!-- OWASP Dependency Check plugin -->
       <plugin>
-		<groupId>org.owasp</groupId>
-		<artifactId>dependency-check-maven</artifactId>
-		<version>${dependency-check-maven.version}</version>
-		<executions>
-		<execution>
-			<goals>
-			<goal>check</goal>
-			</goals>
-		</execution>
-		</executions>
-		<configuration>
-		<failBuildOnCVSS>7</failBuildOnCVSS>
-		<ossIndexEnabled>false</ossIndexEnabled>
-		<autoUpdate>true</autoUpdate> <!-- Disable NVD API updates -->
-		<nvdDatafeedUrl></nvdDatafeedUrl> <!-- Disable NVD data feed -->
-		<connectionTimeout>30000</connectionTimeout>
-		</configuration>
-	</plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>${dependency-check-maven.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <failBuildOnCVSS>7</failBuildOnCVSS>
+          <ossIndexEnabled>false</ossIndexEnabled>
+          <autoUpdate>true</autoUpdate>
+          <nvdDatafeedUrl></nvdDatafeedUrl>
+          <connectionTimeout>30000</connectionTimeout>
+        </configuration>
+      </plugin>
 
       <!-- Integration Tests -->
       <plugin>

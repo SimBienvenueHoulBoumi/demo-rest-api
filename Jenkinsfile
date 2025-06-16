@@ -20,9 +20,15 @@ pipeline {
                     // 🧹 Compile le projet et nettoie les anciens builds
                     sh 'mvn clean compile  && mvn clean package -DskipTests'
                 }
-            }
 
-        
+                post {
+                    success {
+                        echo "Build réussi - Archivage des artefacts..."
+                        // Archive tous les fichiers .jar trouvés dans le sous-répertoire target de user-service
+                        archiveArtifacts artifacts: './target/*.jar'
+                    }
+                }
+            }
 
             stage('🧪 Tests') {
                 steps {

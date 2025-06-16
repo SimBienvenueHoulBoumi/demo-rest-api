@@ -59,11 +59,11 @@ pipeline {
         stage('SonarQube analysis') {
 
             environment {
-                scannerHome = tool "${SONARSCANNER}"
+                scannerHome = tool "${SONAR_SCANNER}"
             }
 
             steps {
-                withSonarQubeEnv("${SONARSERVER}") {
+                withSonarQubeEnv("${SONAR_SERVER}") {
 
                     sh """${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectKey=demo-rest-api \

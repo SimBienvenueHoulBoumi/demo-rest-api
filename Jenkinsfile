@@ -11,12 +11,7 @@ pipeline {
         stage('🔧 Build') {
             steps {
                 sh 'mvn clean compile -DskipTests'
-            }
-
-            post {
-                success {
-                     sh 'ls -al'
-                }
+                sh 'ls -al'
             }
 
             post {

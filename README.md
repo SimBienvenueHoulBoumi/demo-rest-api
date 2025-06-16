@@ -50,6 +50,10 @@ mvn clean compile -X
 
 # Installer dotnet-sdk-8.6 pour dependensy check
 sudo apt install -y dotnet-sdk-8.0
+
+# générer le jar
+mvn clean package
+
 ```
 
 ## 🥪 Lancer les tests

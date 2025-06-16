@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'mac-host-agent' }
+    agent { label 'jenkins-agent' }
 
     tools {
         jdk 'JDK17'

@@ -8,7 +8,8 @@ pipeline {
 
     environment {
         // 🔐 Jeton SonarQube défini dans Jenkins (Manage Jenkins > Credentials > jenkins-sonar)
-        SONAR_TOKEN = credentials('jenkins-sonar')
+        SONAR_SERVER = 'sonarserver'
+        SONAR_SCANNER = 'sonarscanner'
     }
 
     stages {
@@ -55,14 +56,25 @@ pipeline {
             }
         }
 
-        stage('🔍 Scan SonarQube') {
+        stage('SonarQube analysis') {
+
+            environment {
+                scannerHome = tool "${SONARSCANNER}"
+            }
+
             steps {
-                // 🔍 Analyse de la qualité du code avec SonarQube, en précisant le dossier de classes compilées
-                sh '''
-                    mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar \
-                        -Dsonar.java.binaries=target/classes \
-                        -Dsonar.token=$SONAR_TOKEN
-                '''
+                withSonarQubeEnv("${SONARSERVER}") {
+
+                    sh """${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=demo-rest-api \
+                    -Dsonar.projectName=demo-rest-api \
+                    -Dsonar.projectVersion=0.0.1 \
+                    -Dsonar.sources=src/ \
+                    -Dsonar.java.binaries=target/test-classes/simdev/demo/service/unit \
+                    -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                    -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
+                    -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml"""
+                } 
             }
         }
 

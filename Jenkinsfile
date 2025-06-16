@@ -6,27 +6,27 @@ pipeline {
         maven 'MAVEN3.9'
     }
     
-    stages {
+stages {
+
+        stage('📥 Checkout') {
+            steps {
+                // 📥 Clone le code source depuis le dépôt Git lié au job Jenkins
+                checkout scm
+            }
+        }
 
         stage('🔧 Build') {
             steps {
-                sh './mvn clean package -DskipTests'
-            }
-
-            post {
-                success {
-                    echo "Build réussi - Archivage des artefacts..."
-                    // Archive tous les fichiers .jar trouvés dans le sous-répertoire target de user-service
-                    archiveArtifacts artifacts: 'target/demo-0.0.1-SNAPSHOT.jar'
-                }
+                // 🧹 Compile le projet et nettoie les anciens builds
+                sh 'mvn clean compile'
             }
         }
 
         stage('🧪 Tests') {
             steps {
+                // 🧪 Lance les tests unitaires
                 sh 'mvn test'
             }
         }
-        
-    }
+
 }

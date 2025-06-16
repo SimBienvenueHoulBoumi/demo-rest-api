@@ -17,7 +17,7 @@ pipeline {
                 success {
                     echo "Build réussi - Archivage des artefacts..."
                     // Archive tous les fichiers .jar trouvés dans le sous-répertoire target de user-service
-                    archiveArtifacts artifacts: 'target/demo-O.O.1-SNAPSHOP.jar'
+                    archiveArtifacts artifacts: 'target/demo-O.O.1-SNAPSHOT.jar'
                 }
             }
         }

@@ -52,6 +52,10 @@ pipeline {
                 }
              }
 
+             stage('Scan sonar') {
+                sh 'mvn clean org.sonarsource.scanner.maven:sanar-maven-plugin:3.9.0.2155:sonar'
+             }
+
     }
 }
 

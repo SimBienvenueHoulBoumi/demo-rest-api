@@ -18,7 +18,7 @@ pipeline {
             stage('🔧 Build') {
                 steps {
                     // 🧹 Compile le projet et nettoie les anciens builds
-                    sh 'mvn clean compile  && mvn clean package -DskipTests'
+                    sh 'mvn clean install -DskipTests'
                 }
 
                 post {

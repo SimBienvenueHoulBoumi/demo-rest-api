@@ -223,6 +223,32 @@
           </compilerArgs>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>main-xref</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>jxr</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>test-xref</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>test-jxr</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>4.0.0-M7</version>
+      </plugin>
     </plugins>
   </build>
 </project>

@@ -35,6 +35,12 @@ pipeline {
                 }
             }
 
+            stage('site') {
+                steps {
+                    sh 'mvn clean generate-sources generate-test-sources site'
+                }
+            }
+
             stage('Checkstyle Analysis') {
                 steps {
                         /*

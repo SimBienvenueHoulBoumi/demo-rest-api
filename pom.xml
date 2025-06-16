@@ -45,14 +45,15 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.30</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -63,7 +64,7 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>2.2.224</version> <!-- ✅ version stable sans CVE -->
+      <version>2.2.224</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -155,7 +156,7 @@
           </execution>
         </executions>
         <configuration>
-          <failBuildOnCVSS>9</failBuildOnCVSS> <!-- ↗️ pour ne pas bloquer sur CVE modérées -->
+          <failBuildOnCVSS>9</failBuildOnCVSS>
           <ossIndexEnabled>false</ossIndexEnabled>
           <autoUpdate>true</autoUpdate>
           <connectionTimeout>30000</connectionTimeout>
@@ -182,7 +183,31 @@
           <reportsDirectory>${project.build.directory}/failsafe-reports</reportsDirectory>
         </configuration>
       </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.10.1</version>
+      <configuration>
+        <source>17</source>
+        <target>17</target>
+        <annotationProcessorPaths>
+          <path>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.5.5.Final</version>
+          </path>
+          <path>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+          </path>
+        </annotationProcessorPaths>
+        <compilerArgs>
+          <arg>-Amapstruct.defaultComponentModel=spring</arg>
+          <arg>-Amapstruct.verbose=true</arg>
+        </compilerArgs>
+      </configuration>
+    </plugin>
     </plugins>
   </build>
-
 </project>

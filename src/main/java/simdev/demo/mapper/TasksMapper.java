@@ -4,23 +4,18 @@ import org.springframework.stereotype.Component;
 import simdev.demo.dto.TasksDto;
 import simdev.demo.models.Tasks;
 
-/**
- * Utility class for mapping between TasksDto and Tasks entities.
- */
 @Component
 public class TasksMapper {
 
     public Tasks toEntity(TasksDto dto) {
-        if (dto == null) return null;
-        return Tasks.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .status(dto.getStatus())
-                .build();
+        Tasks task = new Tasks();
+        task.setName(dto.getName());
+        task.setDescription(dto.getDescription());
+        task.setStatus(dto.getStatus());
+        return task;
     }
 
     public TasksDto toDto(Tasks task) {
-        if (task == null) return null;
         return new TasksDto(task.getName(), task.getDescription(), task.getStatus());
     }
 }

@@ -62,14 +62,14 @@ pipeline {
                 }
             }
         }
-
+ /* 
         stage('🔎 Détection des Tests d’Intégration') {
             steps {
                 echo "🧐 Inspection des tests d’intégration trouvés :"
                 sh 'find src/test/java -name "*IT.java" || true'
             }
-        }
-
+       }
+*/ 
         stage('🧬 Tests d’Intégration') {
             steps {
                 echo "🧬 Tests d’intégration"

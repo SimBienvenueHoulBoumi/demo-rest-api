@@ -3,7 +3,6 @@ package simdev.demo.servicesImpl;
 import org.springframework.stereotype.Service;
 import lombok.AllArgsConstructor;
 import simdev.demo.dto.TasksDto;
-import simdev.demo.exceptions.TaskNotFoundException;
 import simdev.demo.models.Tasks;
 import simdev.demo.repositories.TasksRepository;
 import simdev.demo.services.TasksGetOneService;
@@ -26,15 +25,4 @@ public class TasksUpdateServiceImpl implements TasksUpdateService {
 
         return tasksRepository.save(existingTask);
     }
-
-    // Add this method or use your existing mapper
-    private TasksDto convertToDto(Tasks task) {
-        TasksDto dto = new TasksDto();
-        dto.setName(task.getName());
-        dto.setDescription(task.getDescription());
-        dto.setStatus(task.getStatus());
-        // set other fields as needed
-        return dto;
-    }
-
 }

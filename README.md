@@ -44,6 +44,10 @@ src
 ---
 
 ```bash
+
+# en dev faire un clean du projet avant 
+mvn clean compile -X
+
 # Installer dotnet-sdk-8.6 pour dependensy check
 sudo apt install -y dotnet-sdk-8.0
 ```

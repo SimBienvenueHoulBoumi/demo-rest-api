@@ -70,7 +70,7 @@ pipeline {
                     -Dsonar.projectName=demo-rest-api \
                     -Dsonar.projectVersion=0.0.1 \
                     -Dsonar.sources=src/ \
-                    -Dsonar.java.binaries=target/test-classes/simdev/demo/service/unit \
+                    -Dsonar.java.binaries=target/test-classes/simdev/demo/services/unit \
                     -Dsonar.junit.reportsPath=target/surefire-reports/ \
                     -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
                     -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml"""

@@ -8,8 +8,8 @@ pipeline {
 
     environment {
         // 🔐 Jeton SonarQube défini dans Jenkins (Manage Jenkins > Credentials > jenkins-sonar)
-        SONAR_SERVER = 'sonarserver'
-        SONAR_SCANNER = 'sonarscanner'
+        SONARSERVER = 'sonarserver'
+        SONARSCANNER = 'sonarscaner'
     }
 
     stages {
@@ -59,11 +59,11 @@ pipeline {
         stage('SonarQube analysis') {
 
             environment {
-                scannerHome = tool "${SONAR_SCANNER}"
+                scannerHome = tool "${SONARSCANNER}"
             }
 
             steps {
-                withSonarQubeEnv("${SONAR_SERVER}") {
+                withSonarQubeEnv("${SONARSERVER}") {
 
                     sh """${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectKey=demo-rest-api \

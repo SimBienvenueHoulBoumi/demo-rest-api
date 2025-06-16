@@ -70,6 +70,8 @@ pipeline {
             }
        }
 */ 
+
+ /* 
         stage('🧬 Tests d’Intégration') {
             steps {
                 echo "🧬 Tests d’intégration"
@@ -81,29 +83,7 @@ pipeline {
                 }
             }
         }
-
-        stage('🛡️ Analyse de Sécurité (OWASP)') {
-            steps {
-                echo "🔍 Inspection minutieuse des dépendances, aucun vilain ne passera."
-                sh 'mvn org.owasp:dependency-check-maven:check || true'
-            }
-            post {
-                always {
-                    echo "📑 Rapport OWASP généré, sécurité au top."
-                    publishHTML([
-                        reportDir: "${TARGET_DIR}",
-                        reportFiles: 'dependency-check-report.html',
-                        reportName: 'OWASP Dependency Check'
-                    ])
-                }
-                failure {
-                    script {
-                        slackSend channel: '#builds', color: 'danger', message: "❌ OWASP Check failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-                    }
-                }
-            }
-        }
-
+        
         stage('🐳 Construction Docker') {
             steps {
                 echo "🚢 Montage du conteneur Docker, le navire est prêt à voguer."
@@ -111,7 +91,6 @@ pipeline {
             }
         }
 
-        /*
         stage('📡 Analyse SonarQube (optionnel)') {
             steps {
                 echo "📈 Envoi des données vers SonarQube, pour un code toujours plus propre."

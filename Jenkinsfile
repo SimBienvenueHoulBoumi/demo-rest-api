@@ -5,6 +5,11 @@ pipeline {
         jdk 'JDK17'
         maven 'MAVEN3.9'
     }
+
+    environment {
+        // 🔐 Jeton SonarQube défini dans Jenkins (Manage Jenkins > Credentials)
+        SONAR_TOKEN = credentials('jenkins-sonar')
+    }
     
     stages {
 

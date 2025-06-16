@@ -21,6 +21,8 @@ public final class TasksServiceImpl implements TasksService {
     private final TasksRepository tasksRepository;
     private final TasksMapper tasksMapper;
 
+    private final String TASK_NOT_FOUND= "Task not found with id: ";
+
     @Override
     public Tasks createTask(final TasksDto newTask) {
         if (tasksRepository.findByName(newTask.getName()).isPresent()) {
@@ -37,14 +39,14 @@ public final class TasksServiceImpl implements TasksService {
     public Tasks getTaskById(final Long id) {
         return tasksRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException(
-                "Task not found with id: " + id));
+                TASK_NOT_FOUND + id));
     }
 
     @Override
     public void updateTask(final Long id, final TasksDto taskDto) {
         Tasks existingTask = tasksRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException(
-                "Task not found with id: " + id));
+                TASK_NOT_FOUND + id));
 
         existingTask.setName(taskDto.getName());
         existingTask.setDescription(taskDto.getDescription());
@@ -58,7 +60,7 @@ public final class TasksServiceImpl implements TasksService {
     public void deleteTask(final Long id) {
         Tasks task = tasksRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException(
-                "Task not found with id: " + id));
+                TASK_NOT_FOUND + id));
 
         tasksRepository.delete(task);
     }

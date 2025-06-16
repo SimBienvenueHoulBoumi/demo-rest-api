@@ -7,7 +7,6 @@ pipeline {
     }
     
     stages {
-
             stage('📥 Checkout') {
                 steps {
                     // 📥 Clone le code source depuis le dépôt Git lié au job Jenkins
@@ -24,7 +23,6 @@ pipeline {
                 post {
                     success {
                         echo "Build réussi - Archivage des artefacts..."
-                        // Archive tous les fichiers .jar trouvés dans le sous-répertoire target de user-service
                         archiveArtifacts artifacts: 'target/*.jar'
                     }
                 }
@@ -36,6 +34,17 @@ pipeline {
                     sh 'mvn test'
                 }
             }
+
+            stage('Checkstyle Analysis') {
+                steps {
+                        /*
+                            Commande Maven:
+                            checkstyle:checkstyle : exécute l'analyse Checkstyle
+                            Génère un rapport dans target/checkstyle-result.xml
+                        */
+                    sh 'mvn checkstyle:checkstyle'
+                }
+             }
 
     }
 }

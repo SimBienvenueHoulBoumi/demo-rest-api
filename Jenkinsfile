@@ -13,6 +13,11 @@ pipeline {
                 sh 'mvn clean compile -DskipTests'
             }
 
+
+            steps {
+                sh 'ls -al'
+            }
+
             post {
                 success {
                     echo "Build réussi - Archivage des artefacts..."

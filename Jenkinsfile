@@ -6,27 +6,29 @@ pipeline {
         maven 'MAVEN3.9'
     }
     
-stages {
+    stages {
 
-        stage('📥 Checkout') {
-            steps {
-                // 📥 Clone le code source depuis le dépôt Git lié au job Jenkins
-                checkout scm
+            stage('📥 Checkout') {
+                steps {
+                    // 📥 Clone le code source depuis le dépôt Git lié au job Jenkins
+                    checkout scm
+                }
             }
-        }
 
-        stage('🔧 Build') {
-            steps {
-                // 🧹 Compile le projet et nettoie les anciens builds
-                sh 'mvn clean compile'
+            stage('🔧 Build') {
+                steps {
+                    // 🧹 Compile le projet et nettoie les anciens builds
+                    sh 'mvn clean compile'
+                }
             }
-        }
 
-        stage('🧪 Tests') {
-            steps {
-                // 🧪 Lance les tests unitaires
-                sh 'mvn test'
+            stage('🧪 Tests') {
+                steps {
+                    // 🧪 Lance les tests unitaires
+                    sh 'mvn test'
+                }
             }
-        }
 
+    }
 }
+

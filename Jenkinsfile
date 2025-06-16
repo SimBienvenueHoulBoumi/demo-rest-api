@@ -13,9 +13,10 @@ pipeline {
                 sh 'mvn clean compile -DskipTests'
             }
 
-
-            steps {
-                sh 'ls -al'
+            post {
+                success {
+                     sh 'ls -al'
+                }
             }
 
             post {

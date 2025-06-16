@@ -7,55 +7,57 @@ pipeline {
     }
     
     stages {
-            stage('📥 Checkout') {
-                steps {
-                    // 📥 Clone le code source depuis le dépôt Git lié au job Jenkins
-                    checkout scm
-                }
+
+        stage('📥 Checkout') {
+            steps {
+                // 📥 Clone le code source depuis le dépôt Git lié au job Jenkins
+                checkout scm
+            }
+        }
+
+        stage('🔧 Build') {
+            steps {
+                // 🧹 Compile le projet et nettoie les anciens builds
+                sh 'mvn clean install -DskipTests'
             }
 
-            stage('🔧 Build') {
-                steps {
-                    // 🧹 Compile le projet et nettoie les anciens builds
-                    sh 'mvn clean install -DskipTests'
-                }
-
-                post {
-                    success {
-                        echo "Build réussi - Archivage des artefacts..."
-                        archiveArtifacts artifacts: 'target/*.jar'
-                    }
+            post {
+                success {
+                    echo "Build réussi - Archivage des artefacts..."
+                    archiveArtifacts artifacts: 'target/*.jar'
                 }
             }
+        }
 
-            stage('🧪 Tests') {
-                steps {
-                    // 🧪 Lance les tests unitaires
-                    sh 'mvn test'
-                }
+        stage('🧪 Tests') {
+            steps {
+                // 🧪 Lance les tests unitaires
+                sh 'mvn test'
             }
+        }
 
-            stage('site') {
-                steps {
-                    sh 'mvn clean generate-sources generate-test-sources site'
-                }
+        stage('📄 Site Maven') {
+            steps {
+                // 🌐 Génère la documentation Maven dans target/site
+                sh 'mvn clean generate-sources generate-test-sources site'
             }
+        }
 
-            stage('Checkstyle Analysis') {
-                steps {
-                        /*
-                            Commande Maven:
-                            checkstyle:checkstyle : exécute l'analyse Checkstyle
-                            Génère un rapport dans target/checkstyle-result.xml
-                        */
-                    sh 'mvn checkstyle:checkstyle'
-                }
-             }
+        stage('🧹 Checkstyle Analysis') {
+            steps {
+                // 📋 Analyse de style de code
+                sh 'mvn checkstyle:checkstyle'
+            }
+        }
 
-             stage('Scan sonar') {
-                sh 'mvn clean org.sonarsource.scanner.maven:sanar-maven-plugin:3.9.0.2155:sonar'
-             }
+        stage('🔍 Scan SonarQube') {
+            steps {
+                // 🔍 Analyse de la qualité du code avec SonarQube
+                sh 'mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+            }
+        }
 
     }
+
 }
 

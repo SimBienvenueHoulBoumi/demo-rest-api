@@ -2,31 +2,29 @@ pipeline {
     agent { label 'jenkins-agent' }
 
     tools {
-        jdk 'JDK17'
-        maven 'MAVEN3.9'
+        jdk 'JDK17'             // 📦 Java Development Kit version 17 (déclaré dans Jenkins)
+        maven 'MAVEN3.9'        // 📦 Maven version 3.9 (déclaré dans Jenkins)
     }
 
     environment {
-        // 🔐 Jeton SonarQube défini dans Jenkins (Manage Jenkins > Credentials > jenkins-sonar)
-        SONARSERVER = 'sonarserver'
-        SONARSCANNER = 'sonarscaner'
+        SONARQUBE_ENV = 'sonarserver'   // 🔐 Nom du serveur SonarQube configuré dans Jenkins
+        SONARSCANNER = 'sonarscaner'    // 🔧 Nom du scanner SonarQube configuré dans Jenkins
     }
 
     stages {
 
         stage('📥 Checkout') {
             steps {
-                // 📥 Clone le code source depuis le dépôt Git lié au job Jenkins
+                // ⬇️ Récupération du code source depuis le SCM (Git, etc.)
                 checkout scm
             }
         }
 
         stage('🔧 Build') {
             steps {
-                // 🧹 Compile le projet et génère les fichiers `.class` nécessaires à SonarQube
+                // 🧱 Compilation du projet Java sans exécuter les tests
                 sh 'mvn clean install -DskipTests'
             }
-
             post {
                 success {
                     echo "✅ Build réussi - Archivage des artefacts..."
@@ -37,46 +35,50 @@ pipeline {
 
         stage('🧪 Tests') {
             steps {
-                // 🧪 Lance les tests unitaires
+                // 🧪 Exécution des tests unitaires
                 sh 'mvn test'
             }
         }
 
         stage('📄 Site Maven') {
             steps {
-                // 🌐 Génère la documentation Maven (HTML) dans `target/site`
+                // 📚 Génération de la documentation HTML du projet (target/site)
                 sh 'mvn site'
             }
         }
 
         stage('🧹 Checkstyle Analysis') {
             steps {
-                // 📋 Analyse Checkstyle → Résultats dans `target/checkstyle-result.xml`
+                // 🧼 Analyse statique du code avec Checkstyle
                 sh 'mvn checkstyle:checkstyle'
             }
         }
 
-        stage('SonarQube analysis') {
-
-            environment {
-                scannerHome = tool "${SONARSCANNER}"
-            }
-
+        stage('🔍 SonarQube Analysis') {
             steps {
-                withSonarQubeEnv("${SONARSERVER}") {
-
-                    sh """${scannerHome}/bin/sonar-scanner \
-                    -Dsonar.projectKey=demo-rest-api \
-                    -Dsonar.projectName=demo-rest-api \
-                    -Dsonar.projectVersion=0.0.1 \
-                    -Dsonar.sources=src/ \
-                    -Dsonar.java.binaries=target/test-classes/simdev/demo/services/unit \
-                    -Dsonar.junit.reportsPath=target/surefire-reports/ \
-                    -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
-                    -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml"""
-                } 
+                // 📡 Envoi des résultats vers SonarQube via le plugin Maven
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    sh """
+                        mvn sonar:sonar \
+                          -Dsonar.projectKey=demo-rest-api \
+                          -Dsonar.projectName=demo-rest-api \
+                          -Dsonar.projectVersion=0.0.1 \
+                          -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
+                          -Dsonar.java.binaries=target/classes \
+                          -Dsonar.junit.reportsPath=target/surefire-reports \
+                          -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+                    """
+                }
             }
         }
 
+        stage('✅ Quality Gate') {
+            steps {
+                // ⏳ Attend le retour du Quality Gate (fail ou pass)
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
     }
 }

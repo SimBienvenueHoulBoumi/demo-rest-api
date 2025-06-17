@@ -7,8 +7,8 @@ pipeline {
     }
 
     environment {
-        SONARQUBE_ENV = 'sonarqube-token'   // 🔐 Nom du serveur SonarQube configuré dans Jenkins
-        SONAR_TOKEN_ID = 'sonarqube-token-id'
+        SONARQUBE_ENV = 'squ_1518063ed11325d73f160a32d01e1489b88ce1f1'   // 🔐 Nom du serveur SonarQube configuré dans Jenkins
+        SONAR_TOKEN_ID = 'sonarqube-token'
     }
 
     stages {
@@ -49,13 +49,6 @@ pipeline {
             }
         }
 
-        stage('🔍 Affichage variables ENV') {
-            steps {
-                echo "🔎 SONARQUBE_ENV = ${SONARQUBE_ENV}"
-                echo "🔎 SONAR_TOKEN_ID = ${SONAR_TOKEN_ID}"
-            }
-        }
-/**
         stage('🔍 Debug Token') {
             steps {
                     withCredentials([string(credentialsId: "${SONAR_TOKEN_ID}", variable: 'SONAR_TOKEN')])
@@ -90,6 +83,6 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
-**/
+
         }
 }

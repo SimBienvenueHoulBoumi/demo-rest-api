@@ -2,13 +2,13 @@ pipeline {
     agent { label 'jenkins-agent' }
 
     tools {
-        jdk 'JDK17'             // 📦 Java Development Kit version 17
-        maven 'MAVEN3.9'        // 📦 Maven version 3.9
+        jdk 'JDK17'
+        maven 'MAVEN3.9'
     }
 
     environment {
-        SONARQUBE_ENV = 'squ_1518063ed11325d73f160a32d01e1489b88ce1f1'   // 🔐 Nom du serveur SonarQube configuré dans Jenkins
-        SONAR_TOKEN_ID = 'sonarqube-token'
+        SONARQUBE_ENV = 'squ_1518063ed11325d73f160a32d01e1489b88ce1f1'   // 🔐 Nom du serveur SonarQube
+        SONAR_TOKEN_ID = 'sonarqube-token'                              // 🔐 ID de la credential Jenkins
     }
 
     stages {
@@ -51,7 +51,7 @@ pipeline {
 
         stage('🔍 Debug Token') {
             steps {
-                    withCredentials([string(credentialsId: "${SONAR_TOKEN_ID}", variable: 'SONAR_TOKEN')])
+                withCredentials([string(credentialsId: "${SONAR_TOKEN_ID}", variable: 'SONAR_TOKEN')]) {
                     sh 'echo "Token starts with: ${SONAR_TOKEN:0:8}"'
                 }
             }
@@ -83,6 +83,6 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
-
         }
+    }
 }

@@ -57,24 +57,25 @@ pipeline {
         }
 
         stage('🔍 SonarQube Analysis') {
-            steps {
-                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                    withSonarQubeEnv('sonarserver') {
-                        sh '''
-                            mvn sonar:sonar \
-                            -Dsonar.projectKey=demo-rest-api \
-                            -Dsonar.projectName=demo-rest-api \
-                            -Dsonar.projectVersion=0.0.1 \
-                            -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
-                            -Dsonar.java.binaries=target/classes \
-                            -Dsonar.junit.reportsPath=target/surefire-reports \
-                            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
-                            -Dsonar.token=${SONAR_TOKEN}
-                        '''
+                steps {
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        withSonarQubeEnv('sonarserver') {
+                            sh '''
+                                mvn sonar:sonar \
+                                -Dsonar.projectKey=demo-rest-api \
+                                -Dsonar.projectName=demo-rest-api \
+                                -Dsonar.projectVersion=0.0.1 \
+                                -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
+                                -Dsonar.java.binaries=target/classes \
+                                -Dsonar.junit.reportsPath=target/surefire-reports \
+                                -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
+                                -Dsonar.token=${SONAR_TOKEN}
+                            '''
+                        }
                     }
                 }
-    }
-}
+            }
+
 
 
         stage('✅ Quality Gate') {

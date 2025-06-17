@@ -50,7 +50,7 @@ pipeline {
 
         stage('🔍 Debug Token') {
             steps {
-                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: 'jenkins-token', variable: 'SONAR_TOKEN')]) {
                     sh 'echo "Token starts with: ${SONAR_TOKEN:0:8}"'
                 }
             }
@@ -58,7 +58,7 @@ pipeline {
 
         stage('🔍 SonarQube Analysis') {
                 steps {
-                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'jenkins-token', variable: 'SONAR_TOKEN')]) {
                         withSonarQubeEnv('sonarserver') {
                             sh '''
                                 mvn sonar:sonar \

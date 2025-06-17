@@ -7,7 +7,8 @@ pipeline {
     }
 
     environment {
-        SONARQUBE_ENV = 'sonarserver'   // 🔐 Nom du serveur SonarQube configuré dans Jenkins
+        SONARQUBE_ENV = 'jenkins-token'   // 🔐 Nom du serveur SonarQube configuré dans Jenkins
+        SONAR_TOKEN_ID = 'squ_1518063ed11325d73f160a32d01e1489b88ce1f1'
     }
 
     stages {
@@ -50,33 +51,31 @@ pipeline {
 
         stage('🔍 Debug Token') {
             steps {
-                withCredentials([string(credentialsId: 'jenkins-token', variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: "${SONAR_TOKEN_ID}", variable: 'SONAR_TOKEN')]) {
                     sh 'echo "Token starts with: ${SONAR_TOKEN:0:8}"'
                 }
             }
         }
 
         stage('🔍 SonarQube Analysis') {
-                steps {
-                    withCredentials([string(credentialsId: 'jenkins-token', variable: 'SONAR_TOKEN')]) {
-                        withSonarQubeEnv('sonarserver') {
-                            sh '''
-                                mvn sonar:sonar \
-                                -Dsonar.projectKey=demo-rest-api \
-                                -Dsonar.projectName=demo-rest-api \
-                                -Dsonar.projectVersion=0.0.1 \
-                                -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
-                                -Dsonar.java.binaries=target/classes \
-                                -Dsonar.junit.reportsPath=target/surefire-reports \
-                                -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
-                                -Dsonar.token=${SONAR_TOKEN}
-                            '''
-                        }
+            steps {
+                withCredentials([string(credentialsId: "${SONAR_TOKEN_ID}", variable: 'SONAR_TOKEN')]) {
+                    withSonarQubeEnv("${SONARQUBE_ENV}") {
+                        sh '''
+                            mvn sonar:sonar \
+                            -Dsonar.projectKey=demo-rest-api \
+                            -Dsonar.projectName=demo-rest-api \
+                            -Dsonar.projectVersion=0.0.1 \
+                            -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
+                            -Dsonar.java.binaries=target/classes \
+                            -Dsonar.junit.reportsPath=target/surefire-reports \
+                            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
+                            -Dsonar.token=${SONAR_TOKEN}
+                        '''
                     }
                 }
             }
-
-
+        }
 
         stage('✅ Quality Gate') {
             steps {

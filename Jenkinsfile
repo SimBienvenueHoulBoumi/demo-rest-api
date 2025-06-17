@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        SONARQUBE_ENV = 'jenkins-token'   // 🔐 Nom du serveur SonarQube configuré dans Jenkins
+        SONARQUBE_ENV = 'sonarqube-token'   // 🔐 Nom du serveur SonarQube configuré dans Jenkins
         SONAR_TOKEN_ID = 'squ_1518063ed11325d73f160a32d01e1489b88ce1f1'
     }
 

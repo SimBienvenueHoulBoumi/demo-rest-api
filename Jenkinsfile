@@ -2,13 +2,13 @@ pipeline {
     agent { label 'jenkins-agent' }
 
     tools {
-        jdk 'JDK17'
-        maven 'MAVEN3.9'
+        jdk 'JDK17'             // 📦 Java Development Kit version 17
+        maven 'MAVEN3.9'        // 📦 Maven version 3.9
     }
 
     environment {
-        SONARQUBE_ENV = 'squ_1518063ed11325d73f160a32d01e1489b88ce1f1'   // 🔐 Nom du serveur SonarQube
-        SONAR_TOKEN_ID = 'sonarqube-token'                              // 🔐 ID de la credential Jenkins
+        SONARQUBE_ENV = 'sonarqube'         // ✅ NOM visible défini dans Jenkins > Configure System > SonarQube servers
+        SONAR_TOKEN_ID = 'sonarqube-token'  // ✅ ID d'un "Secret Text" dans les credentials Jenkins
     }
 
     stages {
@@ -51,7 +51,7 @@ pipeline {
 
         stage('🔍 Debug Token') {
             steps {
-                withCredentials([string(credentialsId: "${SONAR_TOKEN_ID}", variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: SONAR_TOKEN_ID, variable: 'SONAR_TOKEN')]) {
                     sh 'echo "Token starts with: ${SONAR_TOKEN:0:8}"'
                 }
             }
@@ -59,8 +59,8 @@ pipeline {
 
         stage('🔍 SonarQube Analysis') {
             steps {
-                withCredentials([string(credentialsId: "${SONAR_TOKEN_ID}", variable: 'SONAR_TOKEN')]) {
-                    withSonarQubeEnv("${SONARQUBE_ENV}") {
+                withCredentials([string(credentialsId: SONAR_TOKEN_ID, variable: 'SONAR_TOKEN')]) {
+                    withSonarQubeEnv(SONARQUBE_ENV) {
                         sh '''
                             mvn sonar:sonar \
                             -Dsonar.projectKey=demo-rest-api \
@@ -70,7 +70,7 @@ pipeline {
                             -Dsonar.java.binaries=target/classes \
                             -Dsonar.junit.reportsPath=target/surefire-reports \
                             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
-                            -Dsonar.token=${SONAR_TOKEN}
+                            -Dsonar.token=$SONAR_TOKEN
                         '''
                     }
                 }

@@ -10,7 +10,6 @@ pipeline {
         SONARSERVER = 'sonarserver'         // ✅ Jenkins > Configure System > SonarQube servers
         SONARSCANNER = 'sonarscanner'       // ✅ Jenkins > Configure System > SonarQube scanners
         SNYK = 'snyk'                       // ✅ Jenkins > Configure System > Snyk installations
-        SNYK_TOKEN = credentials('snyk-token') // ✅ Jenkins > Credentials > System > Global credentials (unrestricted)
     }
 
     stages {
@@ -68,7 +67,7 @@ pipeline {
             steps {
                 snykSecurity (
                     severity: 'medium',
-                    snykInstallation: 'snyk',                 // 🔧 Nom configuré dans Jenkins > Global Tool Configuration > Snyk installations
+                    snykInstallation: "${SNYK}",                 // 🔧 Nom configuré dans Jenkins > Global Tool Configuration > Snyk installations
                     snykTokenId: 'snyk-token',                // 🔧 ID exact du Secret Text Credential
                     targetFile: 'pom.xml',
                     monitorProjectOnBuild: true,

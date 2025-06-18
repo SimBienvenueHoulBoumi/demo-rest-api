@@ -9,6 +9,8 @@ pipeline {
     environment {
         SONARSERVER = 'sonarserver'         // ✅ Jenkins > Configure System > SonarQube servers
         SONARSCANNER = 'sonarscanner'       // ✅ Jenkins > Configure System > SonarQube scanners
+        SNYK = 'snyk'                       // ✅ Jenkins > Configure System > Snyk installations
+        SNYK_TOKEN = credentials('snyk-token') // ✅ Jenkins > Credentials > System > Global credentials (unrestricted)
     }
 
     stages {
@@ -62,45 +64,19 @@ pipeline {
             }
         }
 
-        stage('📥 Install Snyk CLI and snyk-to-html') {
+        stage('Snyk Dependency Scan') {
             steps {
-                sh '''
-                    # Détection de l'OS
-                    if [[ "$(uname)" == "Linux" ]]; then
-                        echo "➡ Téléchargement de Snyk pour Linux"
-                        curl -sL https://static.snyk.io/cli/latest/snyk-linux -o snyk
-                    elif [[ "$(uname)" == "Darwin" ]]; then
-                        echo "➡ Téléchargement de Snyk pour macOS"
-                        curl -sL https://static.snyk.io/cli/latest/snyk-macos -o snyk
-                    else
-                        echo "❌ OS non supporté par ce script"
-                        exit 1
-                    fi
-
-                    chmod +x snyk
-
-                    echo "➡ Téléchargement de snyk-to-html"
-                    curl -sL https://github.com/snyk/snyk-to-html/releases/latest/download/snyk-to-html -o snyk-to-html
-                    chmod +x snyk-to-html
-                '''
-            }
+                snykSecurity (
+                    severity: 'medium',                                                               // Seuil minimum de sévérité pour les vulnérabilités
+                    snykInstallation: "${SNYK}",                                                      // Installation Snyk configurée dans Jenkins
+                    snykTokenId: "${SNYK_TOKEN}",                                                     // Identifiant du token Snyk stocké dans Jenkins Credentials
+                    targetFile: "pom.xml",                                                            // Fichier de build Maven à analyser
+                    monitorProjectOnBuild: true,                                                      // Active le monitoring continu du projet dans Snyk
+                    failOnIssues: false,                                                              // Autoriser le pipeline à continuer avec un avertissement
+                    additionalArguments: '--report --format=html --report-file=snyk_report.html'      // Génère aussi un rapport HTML        
+                ) 
+            
+            } 
         }
-
-        stage('🔒 Snyk via CLI') {
-            steps {
-                withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
-                    sh '''
-                        ./snyk auth $SNYK_TOKEN
-                        ./snyk test --severity-threshold=medium --file=pom.xml --json > snyk_report.json || true
-                        ./snyk test --severity-threshold=medium --file=pom.xml --json | ./snyk-to-html -o snyk_report.html || true
-                    '''
-                }
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'snyk_report.*', fingerprint: true
-                }
-            }
-        }
-    }
+   }
 }

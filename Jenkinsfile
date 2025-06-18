@@ -23,7 +23,7 @@ pipeline {
         stage('🛠️ Générer Maven Wrapper si absent') {
             steps {
                 sh '''
-                    if [ ! -f "mvn" ] || [ ! -f "./.mvn/wrapper/maven-wrapper.properties" ]; then
+                    if [ ! -f "./mvnw" ] || [ ! -f "./.mvn/wrapper/maven-wrapper.properties" ]; then
                         echo "➡ Maven Wrapper manquant. Génération..."
                         mvn -N io.takari:maven:wrapper
                     else
@@ -79,12 +79,12 @@ pipeline {
         stage('Snyk Dependency Scan') {
             steps {
                 snykSecurity (
-                    severity: 'medium',
+                    severity: 'high',                  // 🔧 Niveau de sévérité minimum pour les problèmes à signaler
                     snykInstallation: "${SNYK}",                 // 🔧 Nom configuré dans Jenkins > Global Tool Configuration > Snyk installations
                     snykTokenId: 'snyk-token',                // 🔧 ID exact du Secret Text Credential
                     targetFile: 'pom.xml',
                     monitorProjectOnBuild: true,
-                    failOnIssues: false,
+                    failOnIssues: true,
                     additionalArguments: '--report --format=html --report-file=snyk_report.html'
                 ) 
             } 

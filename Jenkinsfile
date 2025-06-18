@@ -46,6 +46,7 @@ pipeline {
             }
         }
 
+
         stage('SonarQube analysis') {
             environment {
 
@@ -80,6 +81,17 @@ pipeline {
                         failOnIssues: false,
                         additionalArguments: '--report --format=html --report-file=snyk_report.html'
                     )
+                }
+            }
+        }
+
+        stage('🔒 Snyk via CLI') {
+            steps {
+                withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
+                    sh """
+                        snyk auth \$SNYK_TOKEN
+                        snyk test --severity-threshold=medium --file=pom.xml || true
+                    """
                 }
             }
         }

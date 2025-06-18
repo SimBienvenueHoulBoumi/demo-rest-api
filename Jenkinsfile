@@ -24,7 +24,6 @@ pipeline {
     tools {
         jdk 'jdk'         // Java Development Kit (version 17)
         maven 'maven'     // Apache Maven (version 3.9)
-        docker 'docker'   // Docker CLI pour construire et gérer les images Docker
     }
 
     /**

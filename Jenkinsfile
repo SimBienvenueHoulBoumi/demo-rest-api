@@ -77,8 +77,7 @@ pipeline {
                     targetFile: "pom.xml",                                                            // Fichier de build Maven à analyser
                     monitorProjectOnBuild: true,                                                      // Active le monitoring continu du projet dans Snyk
                     failOnIssues: false,                                                              // Autoriser le pipeline à continuer avec un avertissement
-                    additionalArguments: '--report --format=html --report-file=snyk_report.html'      // Génère aussi un rapport HTML) }} }
-
+                    additionalArguments: '--maven-aggregate-project --all-projects --report --format=html --report-file=snyk_report.html'
                 )
            }
        }

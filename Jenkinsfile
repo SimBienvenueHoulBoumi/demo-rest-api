@@ -2,8 +2,8 @@ pipeline {
     agent { label 'jenkins-agent' }
 
     tools {
-        jdk 'JDK17'             // 📦 Java Development Kit version 17
-        maven 'MAVEN3.9'        // 📦 Maven version 3.9
+        jdk 'jdk'             // 📦 Java Development Kit version 17
+        maven 'maven'        // 📦 Maven version 3.9
     }
 
     environment {

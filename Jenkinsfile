@@ -9,8 +9,9 @@ pipeline {
     environment {
         SONARSERVER = 'sonarserver'         // ✅ NOM visible défini dans Jenkins > Configure System > SonarQube servers
         SONARSCANNER = 'sonarscanner'       // ✅ NOM visible défini dans Jenkins > Configure System > SonarQube scanners
-        SNYK = 'SnykCLI'  // ✅ NOM visible défini dans Jenkins > Configure System > Tools > Snyk installations
+        
         SNYK_TOKEN = 'Snyk'  // l'identifiant du token Snyk doit être configuré dans Jenkins Credentials
+        SNYK = 'SnykCLI'  // ✅ NOM visible défini dans Jenkins > Configure System > Tools > Snyk installations
     }
 
     stages {

@@ -150,7 +150,8 @@ pipeline {
                 echo "Pipeline complete. Notify team (e.g. via Slack/Email)."
             }
         }
-    }
 
     */
+    }
+
 }

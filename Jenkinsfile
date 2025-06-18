@@ -2,50 +2,58 @@ pipeline {
     agent { label 'jenkins-agent' }
 
     tools {
-        jdk 'JDK17'
-        maven 'MAVEN3.9'
+        jdk 'JDK17'             // 📦 Java Development Kit version 17
+        maven 'MAVEN3.9'        // 📦 Maven version 3.9
     }
 
     environment {
-        SONARQUBE_ENV = 'sonarqube'
-        SONAR_TOKEN_ID = 'sonarqube-token'
-        DOCKER_IMAGE = 'registry.simdev.com/demo-rest-api'
+        SONARQUBE_ENV = 'sonarqube'         // ✅ NOM visible défini dans Jenkins > Configure System > SonarQube servers
+        SONAR_TOKEN_ID = 'sonarqube-token'  // ✅ ID d'un "Secret Text" dans les credentials Jenkins
     }
 
     stages {
+
         stage('📥 Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('🔍 Static Code Analysis') {
-            steps {
-                sh 'mvn clean compile'
-            }
-        }
-
         stage('🔧 Build') {
             steps {
-                sh 'mvn install -DskipTests'
+                sh 'mvn clean install -DskipTests'
+            }
+            post {
+                success {
+                    echo "✅ Build réussi - Archivage des artefacts..."
+                    archiveArtifacts artifacts: 'target/*.jar'
+                }
             }
         }
 
-        stage('🧪 Unit Tests') {
+        stage('🧪 Tests') {
             steps {
                 sh 'mvn test'
             }
         }
 
-        stage('📄 Code Coverage') {
+        stage('📄 Site Maven') {
             steps {
-                sh 'mvn clean verify jacoco:report'
+                sh 'mvn site'
             }
         }
 
-        stage('🧹 Code Quality / Checkstyle') {
+        stage('🧹 Checkstyle Analysis') {
             steps {
                 sh 'mvn checkstyle:checkstyle'
+            }
+        }
+
+        stage('🔍 Debug Token') {
+            steps {
+                withCredentials([string(credentialsId: SONAR_TOKEN_ID, variable: 'SONAR_TOKEN')]) {
+                    sh 'echo "Token starts with: ${SONAR_TOKEN:0:8}"'
+                }
             }
         }
 
@@ -58,18 +66,29 @@ pipeline {
                             -Dsonar.projectKey=demo-rest-api \
                             -Dsonar.projectName=demo-rest-api \
                             -Dsonar.projectVersion=0.0.1 \
-                            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                            -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
                             -Dsonar.java.binaries=target/classes \
                             -Dsonar.junit.reportsPath=target/surefire-reports \
                             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
+                            -Dsonar.host.url=http://localhost:9000 \
                             -Dsonar.token=$SONAR_TOKEN
                         '''
+
                     }
                 }
             }
         }
 
         stage('✅ Quality Gate') {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+
+            stage('✅ Quality Gate') {
             steps {
                 timeout(time: 2, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
@@ -153,5 +172,4 @@ pipeline {
 
     */
     }
-
 }

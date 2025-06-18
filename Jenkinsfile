@@ -9,7 +9,6 @@ pipeline {
     environment {
         SONARSERVER = 'sonarserver'         // ✅ Jenkins > Configure System > SonarQube servers
         SONARSCANNER = 'sonarscanner'       // ✅ Jenkins > Configure System > SonarQube scanners
-        SNYK = 'SnykCLI'                    // ✅ Jenkins > Tools > Snyk installations
     }
 
     stages {
@@ -44,7 +43,7 @@ pipeline {
             }
         }
 
-        stage('SonarQube analysis') {
+        stage('📊 SonarQube Analysis') {
             environment {
                 scannerHome = tool "${SONARSCANNER}"
             }
@@ -59,18 +58,29 @@ pipeline {
                         -Dsonar.junit.reportsPath=target/surefire-reports/ \
                         -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
                         -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml"""
-                } 
+                }
+            }
+        }
+
+        stage('📥 Install Snyk CLI and snyk-to-html') {
+            steps {
+                sh '''
+                    curl -sL https://static.snyk.io/cli/latest/snyk-linux -o snyk
+                    chmod +x snyk
+                    curl -sL https://github.com/snyk/snyk-to-html/releases/latest/download/snyk-to-html -o snyk-to-html
+                    chmod +x snyk-to-html
+                '''
             }
         }
 
         stage('🔒 Snyk via CLI') {
             steps {
                 withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
-                    sh """
-                        snyk auth \$SNYK_TOKEN
-                        snyk test --severity-threshold=medium --file=pom.xml --json > snyk_report.json || true
-                        snyk test --severity-threshold=medium --file=pom.xml --json | snyk-to-html -o snyk_report.html || true
-                    """
+                    sh '''
+                        ./snyk auth "$SNYK_TOKEN"
+                        ./snyk test --severity-threshold=medium --file=pom.xml --json > snyk_report.json || true
+                        ./snyk-to-html -i snyk_report.json -o snyk_report.html || true
+                    '''
                 }
             }
             post {
@@ -79,5 +89,6 @@ pipeline {
                 }
             }
         }
+
     }
 }

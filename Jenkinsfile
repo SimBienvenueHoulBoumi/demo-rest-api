@@ -70,6 +70,7 @@ pipeline {
                             -Dsonar.java.binaries=target/classes \
                             -Dsonar.junit.reportsPath=target/surefire-reports \
                             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
+                            -Dsonar.host.url=http://localhost:9000 \
                             -Dsonar.token=$SONAR_TOKEN
                         '''
                     }

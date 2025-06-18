@@ -20,6 +20,19 @@ pipeline {
             }
         }
 
+        stage('🛠️ Générer Maven Wrapper si absent') {
+            steps {
+                sh '''
+                    if [ ! -f "mvn" ] || [ ! -f "./.mvn/wrapper/maven-wrapper.properties" ]; then
+                        echo "➡ Maven Wrapper manquant. Génération..."
+                        mvn -N io.takari:maven:wrapper
+                    else
+                        echo "✅ Maven Wrapper déjà présent."
+                    fi
+                '''
+            }
+        }
+
         stage('🔧 Build') {
             steps {
                 sh 'mvn clean install -DskipTests'

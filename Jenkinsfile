@@ -34,6 +34,7 @@ pipeline {
         SONARSERVER = 'sonarserver'         // 🔍 Nom du serveur SonarQube configuré dans Jenkins
         SONARSCANNER = 'sonarscanner'       // 🔍 Scanner CLI SonarQube configuré dans Jenkins
         SNYK = 'snyk'                       // 🛡️ Nom de l'installation Snyk (scanner de vulnérabilités)
+        BUILD_ID = "0.0.1"                  // 🏗️ ID unique du build Jenkins, utilisé pour taguer l'image Docker
     }
 
     /**
@@ -144,6 +145,16 @@ pipeline {
                     additionalArguments: '--report --format=html --report-file=snyk_report.html' // 📃 Génère un rapport HTML
                 ) 
             } 
+        }
+
+        stage('📦 Build Docker Image') {
+            steps {
+                script {
+                    def imageName = "demo-rest-api:${BUILD_ID}"
+                    sh "docker build -t ${imageName} ."
+                    echo "Docker image built: ${imageName}"
+                }
+            }
         }
     }
 }

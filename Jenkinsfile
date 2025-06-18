@@ -9,9 +9,8 @@ pipeline {
     environment {
         SONARSERVER = 'sonarserver'         // ✅ NOM visible défini dans Jenkins > Configure System > SonarQube servers
         SONARSCANNER = 'sonarscanner'       // ✅ NOM visible défini dans Jenkins > Configure System > SonarQube scanners
-        
-        SNYK_TOKEN = 'Snyk'  // l'identifiant du token Snyk doit être configuré dans Jenkins Credentials
-        SNYK = 'SnykCLI'  // ✅ NOM visible défini dans Jenkins > Configure System > Tools > Snyk installations
+
+        SNYK = 'SnykCLI'  // ✅ NOM visible défini dans Jenkins > Tools > Snyk installations
     }
 
     stages {
@@ -46,15 +45,12 @@ pipeline {
             }
         }
 
-
         stage('SonarQube analysis') {
             environment {
-
                 scannerHome = tool "${SONARSCANNER}"
             }
             steps {
                 withSonarQubeEnv("${SONARSERVER}") {
-
                     sh """${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectKey=demo-rest-api \
                     -Dsonar.projectName=demo-rest-api \
@@ -64,18 +60,17 @@ pipeline {
                     -Dsonar.junit.reportsPath=target/surefire-reports/ \
                     -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco/jacoco.xml \
                     -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml"""
-                } 
+                }
             }
         }
 
-
         stage('Snyk Dependency Scan') {
             steps {
-                withCredentials([string(credentialsId: 'Snyk', variable: 'SNYK_TOKEN')]) {
+                withCredentials([snykApiToken(credentialsId: 'Snyk', variable: 'SNYK_TOKEN')]) {
                     snykSecurity (
                         severity: 'medium',
                         snykInstallation: "${SNYK}",
-                        snykTokenId: 'SNYK_TOKEN',
+                        snykTokenId: 'Snyk',  // correspond à l'ID du credential de type "Snyk API Token"
                         targetFile: "pom.xml",
                         monitorProjectOnBuild: true,
                         failOnIssues: false,
@@ -97,5 +92,5 @@ pipeline {
         }
 
     }
+
 }
- 

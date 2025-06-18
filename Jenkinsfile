@@ -178,6 +178,9 @@ pipeline {
                     def imageName = "demo-rest-api:${BUILD_ID}" // 🔖 Nom complet de l’image Docker (ex: demo-rest-api:0.0.1)
                     // 🐳 Commande pour construire l’image à partir du Dockerfile
                     sh "docker build -t ${imageName} ."
+
+                    env.DOCKER_IMAGE = imageName 
+                    
                     // ✅ Message pour confirmer que l’image est bien construite
                     echo "Docker image built: ${imageName}"
                 }

@@ -35,7 +35,20 @@ pipeline {
         SONARSCANNER = 'sonarscanner'       // 🔍 Scanner CLI SonarQube configuré dans Jenkins
         SNYK = 'snyk'                       // 🛡️ Nom de l'installation Snyk (scanner de vulnérabilités)
         BUILD_ID = "0.0.1"                  // 🏗️ ID unique du build Jenkins, utilisé pour taguer l'image Docker
+        // Configuration de la mémoire allouée à Maven
+        MAVEN_OPTS = "-Xmx1024m"                // Limite la mémoire utilisée par Maven
     }
+
+    /* [5] OPTIONS GLOBALES
+     
+    Configuration du comportement du pipeline*/
+    options {
+        // Nettoie le workspace avant chaque build
+        skipDefaultCheckout(false)// Limite le nombre de builds gardés
+        buildDiscarder(logRotator(numToKeepStr: '5'))// Timeout global du pipeline
+        timeout(time: 30, unit: 'MINUTES')// Horodatage des logs
+        timestamps() 
+     }
 
     /**
      * 📦 Début des étapes du pipeline (appelées "stages").
@@ -171,5 +184,45 @@ pipeline {
             }
         }
 
+            /**
+         * 🔍 Étape de scan de l'image Docker avec Trivy.
+         * Trivy est un outil de sécurité qui identifie les vulnérabilités dans les images Docker (OS + bibliothèques).
+         * L'analyse est effectuée via une API HTTP exposée par le conteneur Trivy (en mode serveur).
+         *
+         * Conditions :
+         * - Le conteneur Trivy doit être actif, sur le même réseau que Jenkins, et écouter sur le port 4954.
+         * - L'image Docker doit déjà être construite et présente localement sur l’hôte.
+         *
+         * Objectifs :
+         * - Automatiser l’analyse de sécurité à chaque build.
+         * - Générer un rapport de vulnérabilités (JSON) stocké dans Jenkins.
+         */
+        stage('🔍 Scan Trivy') {
+            steps {
+                script {
+                    echo "⏳ Attente que Trivy soit prêt (prévention des erreurs 502/connection refused)..."
+                    sh "sleep 10"  // 💤 Donne à Trivy le temps de démarrer après le container up
+
+                    echo "📡 Envoi de l’image Docker à Trivy pour analyse..."
+                    sh """
+                        curl -s -X POST \$TRIVY_URL \\
+                        -H 'Content-Type: application/json' \\
+                        -d '{
+                            "image_name": "${DOCKER_IMAGE}",
+                            "scan_type": "image",
+                            "vuln_type": ["os", "library"],
+                            "severity": ["CRITICAL", "HIGH", "MEDIUM"]
+                        }' > trivy-report.json
+                    """
+
+                    echo "📄 Rapport Trivy généré avec succès"
+                    archiveArtifacts artifacts: 'trivy-report.json' // 🗂️ Archive du rapport pour consultation post-build
+                }
+            }
+        }
+
     }
 }
+
+
+

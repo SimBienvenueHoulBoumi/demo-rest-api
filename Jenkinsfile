@@ -67,15 +67,14 @@ pipeline {
         stage('Snyk Dependency Scan') {
             steps {
                 snykSecurity (
-                    severity: 'medium',                                                               // Seuil minimum de sévérité pour les vulnérabilités
-                    snykInstallation: "${SNYK}",                                                      // Installation Snyk configurée dans Jenkins
-                    snykTokenId: "${SNYK_TOKEN}",                                                     // Identifiant du token Snyk stocké dans Jenkins Credentials
-                    targetFile: "pom.xml",                                                            // Fichier de build Maven à analyser
-                    monitorProjectOnBuild: true,                                                      // Active le monitoring continu du projet dans Snyk
-                    failOnIssues: false,                                                              // Autoriser le pipeline à continuer avec un avertissement
-                    additionalArguments: '--report --format=html --report-file=snyk_report.html'      // Génère aussi un rapport HTML        
+                    severity: 'medium',
+                    snykInstallation: 'snyk',                 // 🔧 Nom configuré dans Jenkins > Global Tool Configuration > Snyk installations
+                    snykTokenId: 'snyk-token',                // 🔧 ID exact du Secret Text Credential
+                    targetFile: 'pom.xml',
+                    monitorProjectOnBuild: true,
+                    failOnIssues: false,
+                    additionalArguments: '--report --format=html --report-file=snyk_report.html'
                 ) 
-            
             } 
         }
    }

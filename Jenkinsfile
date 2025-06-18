@@ -37,11 +37,113 @@ pipeline {
             }
         }
 
-        stage('📄 Site Maven') {
+        stage('📊 Code Coverage') {
             steps {
-                sh 'mvn site'
+                sh 'mvn jacoco:report'
             }
         }
+
+        stage('📊 JaCoCo Report') {
+            steps {
+                jacoco execPattern: 'target/jacoco.exec', classPattern: 'target/classes', sourcePattern: 'src/main/java', exclusionPattern: '**/test/**'
+            }
+            
+            post {
+                success {
+                    echo "✅ JaCoCo report generated successfully."
+                }
+                failure {
+                    echo "❌ JaCoCo report generation failed."
+                }
+            }
+        }
+
+        stage('📊 Surefire Report') {
+            steps {
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+
+        stage('📊 SpotBugs Analysis') {
+            steps {
+                sh 'mvn spotbugs:check'
+            }
+        }
+
+        stage('📊 PMD Analysis') {
+            steps {
+                sh 'mvn pmd:check'
+            }
+        }
+
+        stage('📊 FindBugs Analysis') {
+            steps {
+                sh 'mvn findbugs:check'
+            }
+        }
+
+        stage('📊 Checkstyle Report') {
+            steps {
+                sh 'mvn checkstyle:check'
+            }
+        }
+
+        stage('📊 PMD Report') {
+            steps {
+                pmd parser: 'maven', pattern: '**/target/pmd.xml', ruleSet: 'rulesets/java/basic.xml'
+            }
+        }
+
+        stage('📊 SpotBugs Report') {
+            steps {
+                spotBugs pattern: '**/target/spotbugsXml.xml', trendPattern: '**/target/spotbugsXml.xml'
+            }
+        }
+
+        stage('📊 FindBugs Report') {
+            steps {
+                findbugs pattern: '**/target/findbugsXml.xml', trendPattern: '**/target/findbugsXml.xml'
+            }
+        }
+
+        stage('📊 Checkstyle Result') {
+            steps {
+                checkstyle pattern: '**/target/checkstyle-result.xml', trendPattern: '**/target/checkstyle-result.xml'
+            }
+        }
+
+        stage('📊 PMD Result') {
+            steps {
+                pmd pattern: '**/target/pmd.xml', trendPattern: '**/target/pmd.xml'
+            }
+        }
+
+        stage('📊 SpotBugs Result') {
+            steps {
+                spotBugs pattern: '**/target/spotbugsXml.xml', trendPattern: '**/target/spotbugsXml.xml'
+            }
+        }
+
+        stage('📊 FindBugs Result') {
+            steps {
+                findbugs pattern: '**/target/findbugsXml.xml', trendPattern: '**/target/findbugsXml.xml'
+            }
+        }
+
+        stage('📊 Checkstyle Result') {
+            steps {
+                checkstyle pattern: '**/target/checkstyle-result.xml', trendPattern: '**/target/checkstyle-result.xml'
+            }
+        }
+
+        stage('🔍 SonarQube Environment') {
+            steps {
+                script {
+                    echo "Using SonarQube environment: ${SONARQUBE_ENV}"
+                }
+            }
+        }
+
 
         stage('🧹 Checkstyle Analysis') {
             steps {

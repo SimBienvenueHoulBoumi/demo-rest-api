@@ -73,22 +73,30 @@ pipeline {
             }
         }
 
-        stage('🔒 Snyk via CLI') {
+        stage('📥 Install Snyk CLI and snyk-to-html') {
             steps {
-                withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
-                    sh '''
-                        ./snyk auth "$SNYK_TOKEN"
-                        ./snyk test --severity-threshold=medium --file=pom.xml --json > snyk_report.json || true
-                        ./snyk-to-html -i snyk_report.json -o snyk_report.html || true
-                    '''
-                }
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'snyk_report.*', fingerprint: true
-                }
+                sh '''
+                    # Détection de l'OS
+                    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+                        echo "➡ Téléchargement de Snyk pour Linux"
+                        curl -sL https://static.snyk.io/cli/latest/snyk-linux -o snyk
+                    elif [[ "$OSTYPE" == "darwin"* ]]; then
+                        echo "➡ Téléchargement de Snyk pour macOS"
+                        curl -sL https://static.snyk.io/cli/latest/snyk-macos -o snyk
+                    else
+                        echo "❌ OS non supporté par ce script"
+                        exit 1
+                    fi
+
+                    chmod +x snyk
+
+                    echo "➡ Téléchargement de snyk-to-html"
+                    curl -sL https://github.com/snyk/snyk-to-html/releases/latest/download/snyk-to-html -o snyk-to-html
+                    chmod +x snyk-to-html
+                '''
             }
         }
+
 
     }
 }

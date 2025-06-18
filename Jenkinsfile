@@ -48,8 +48,6 @@ pipeline {
                 withCredentials([string(credentialsId: SONAR_TOKEN_ID, variable: 'SONAR_TOKEN')]) {
                     sh 'echo "Token starts with: ${SONAR_TOKEN:0:8}"'
                 }
-            }
-            steps {
                 withCredentials([string(credentialsId: SONAR_TOKEN_ID, variable: 'SONAR_TOKEN')]) {
                     withSonarQubeEnv(SONARQUBE_ENV) {
                         sh '''
@@ -64,22 +62,18 @@ pipeline {
                             -Dsonar.host.url=http://localhost:9000 \
                             -Dsonar.token=$SONAR_TOKEN
                         '''
-
-                    }
-                }
-            }
-
-             stage('✅ Quality Gate') {
-                steps {
-                    timeout(time: 2, unit: 'MINUTES') {
-                        waitForQualityGate abortPipeline: true
                     }
                 }
             }
         }
 
-       
-
+        stage('✅ Quality Gate') {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
 
         stage('📦 Package') {
             steps {
@@ -93,7 +87,7 @@ pipeline {
             }
         }
 
-/*
+        /*
         stage('🐳 Docker Build & Push') {
             steps {
                 sh '''
@@ -154,7 +148,6 @@ pipeline {
                 echo "Pipeline complete. Notify team (e.g. via Slack/Email)."
             }
         }
-
-    */
+        */
     }
 }

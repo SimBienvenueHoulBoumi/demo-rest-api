@@ -77,7 +77,7 @@ pipeline {
                     monitorProjectOnBuild: true,                                                      // Active le monitoring continu du projet dans Snyk
                     failOnIssues: false,                                                              // Autoriser le pipeline à continuer avec un avertissement
                     additionalArguments: '--report --format=html --report-file=snyk_report.html' 
-                    )
+                )
             }
         }
 

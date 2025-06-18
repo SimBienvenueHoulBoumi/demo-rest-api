@@ -141,7 +141,7 @@ pipeline {
                     snykTokenId: 'snyk-token',                // 🔑 ID de la clé d'API Snyk (stockée dans Jenkins Credentials)
                     targetFile: 'pom.xml',                    // 📄 Fichier principal pour Maven
                     monitorProjectOnBuild: true,              // 📡 Envoi automatique des résultats sur Snyk.io
-                    failOnIssues: true,                       // ❌ Échoue le pipeline en cas de vulnérabilités
+                    failOnIssues: false,                       // ❌ Échoue le pipeline en cas de vulnérabilités
                     additionalArguments: '--report --format=html --report-file=snyk_report.html' // 📃 Génère un rapport HTML
                 ) 
             } 

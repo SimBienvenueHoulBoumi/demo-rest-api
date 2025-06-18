@@ -70,7 +70,6 @@ pipeline {
 
         stage('Snyk Dependency Scan') {
             steps {
-                sh 'chmod +x ./mvnw'
                 snykSecurity (
                     severity: 'medium',                                                               // Seuil minimum de sévérité pour les vulnérabilités
                     snykInstallation: "${SNYK}",                                                      // Installation Snyk configurée dans Jenkins

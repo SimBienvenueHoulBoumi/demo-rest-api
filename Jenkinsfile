@@ -130,11 +130,6 @@ pipeline {
             }
         }
 
-        stage('📊 Checkstyle Result') {
-            steps {
-                checkstyle pattern: '**/target/checkstyle-result.xml', trendPattern: '**/target/checkstyle-result.xml'
-            }
-        }
 
         stage('🔍 SonarQube Environment') {
             steps {

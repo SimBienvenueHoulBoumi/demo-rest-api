@@ -200,15 +200,15 @@ pipeline {
         stage('🔍 Scan Trivy') {
             steps {
                 script {
-                    echo "⏳ Attente que Trivy soit prêt (prévention des erreurs 502/connection refused)..."
-                    sh "sleep 10"  // 💤 Donne à Trivy le temps de démarrer après le container up
+                    echo "⏳ Attente que Trivy soit prêt..."
+                    sh "sleep 10"
 
-                    echo "📡 Envoi de l’image Docker à Trivy pour analyse..."
+                    echo "📡 Scan de l'image ${env.DOCKER_IMAGE} avec Trivy..."
                     sh """
-                        curl -s -X POST \$TRIVY_URL \\
+                        curl -s -X POST ${env.TRIVY_URL} \\
                         -H 'Content-Type: application/json' \\
                         -d '{
-                            "image_name": "${DOCKER_IMAGE}",
+                            "image_name": "${env.DOCKER_IMAGE}",
                             "scan_type": "image",
                             "vuln_type": ["os", "library"],
                             "severity": ["CRITICAL", "HIGH", "MEDIUM"]
@@ -216,7 +216,7 @@ pipeline {
                     """
 
                     echo "📄 Rapport Trivy généré avec succès"
-                    archiveArtifacts artifacts: 'trivy-report.json' // 🗂️ Archive du rapport pour consultation post-build
+                    archiveArtifacts artifacts: 'trivy-report.json'
                 }
             }
         }

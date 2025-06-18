@@ -147,14 +147,29 @@ pipeline {
             } 
         }
 
+        /**
+            * 📦 Étape de construction de l'image Docker.
+            * Cette étape transforme l'application compilée en une image Docker exécutable.
+            * 🔹 Docker doit être installé sur l'agent Jenkins et accessible dans le PATH.
+            * 🔹 Le fichier 'Dockerfile' à la racine du projet définit comment l’image est construite.
+            *
+            * Pourquoi c'est utile :
+            * - Pour rendre l'application portable : elle peut être exécutée sur n'importe quel serveur Docker.
+            * - Pour automatiser le déploiement : l'image peut être poussée vers un registre Docker puis déployée.
+            *
+            * Exemple d'image produite : demo-rest-api:0.0.1
+         */
         stage('📦 Build Docker Image') {
             steps {
                 script {
-                    def imageName = "demo-rest-api:${BUILD_ID}"
+                    def imageName = "demo-rest-api:${BUILD_ID}" // 🔖 Nom complet de l’image Docker (ex: demo-rest-api:0.0.1)
+                    // 🐳 Commande pour construire l’image à partir du Dockerfile
                     sh "docker build -t ${imageName} ."
+                    // ✅ Message pour confirmer que l’image est bien construite
                     echo "Docker image built: ${imageName}"
                 }
             }
         }
+
     }
 }
